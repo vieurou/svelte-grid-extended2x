@@ -1,0 +1,3 @@
+[submodule "src/lib/extensions"]
+	path = src/lib/extensions
+	url = http://gitlab.santelys.fr:8091/ellorente/jsextensions
