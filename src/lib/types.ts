@@ -12,6 +12,18 @@ export type LayoutItem = Size &
 	};
 
 /**
+ * PageItem
+ */
+export type PageItem = LayoutItem & {
+	name: string;
+	folded?: boolean;
+	headed?: boolean;
+	data?: object;
+	cssClass?: string;
+	style?: string;
+};
+
+/**
  * Item position in grid units
  */
 export type Size = { w: number; h: number };
