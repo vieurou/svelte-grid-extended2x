@@ -8,12 +8,13 @@ const config = {
 	preprocess: preprocess({ postcss: true }),
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		alias: {
+			$extensions: './src/extensions',
+			$exampleComponents: './src/lib/examples/components'
+		}
 	},
-	alias: {
-		$extensions: './src/extensions',
-		$exampleComponents: './src/lib/examples/components'
-	}
+	
 };
 
 export default config;
