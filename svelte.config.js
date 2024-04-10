@@ -11,7 +11,8 @@ const config = {
 		adapter: adapter()
 	},
 	alias: {
-		$extensions: './src/lib/extensions'
+		$extensions: './src/extensions',
+		$exampleComponents: './src/lib/examples/components'
 	}
 };
 
