@@ -210,6 +210,12 @@
 		});
 	}
 
+	/* 	function swapMovableForAllItem(items: PageItem, movable: boolean) {
+		items.forEach((element) => {
+			swapmovable(element.id, movable);
+		});
+	} */
+
 	////////Gestion du pliage
 	/**
 	 * @function swapFolded
@@ -238,7 +244,7 @@
 
 	//****** *Gestion des Fenetres *********//
 
-	//CODE specifique à ma page de gestion des professions
+	//SPECIFIC CODE FOR THIS PAGE
 	export let pageItems: Array<PageItem> = [
 		{
 			id: 'HelloWorld',
@@ -297,22 +303,11 @@
 	const itemSize = { width: 100, height: 100 };
 
 	//*******FIN Gestion des Fenetres*********//
-
-	//****Gestion des profession****//
-	import type { Profession } from './prototypesProfession';
-
-	let profession: Profession = null;
-
-	$: if (profession != null) {
-		console.log('profession : ', profession);
-	}
-
-	//****FIN Gestion des profession****//
 </script>
 
 <svelte:head>
-	<title>Professions</title>
-	<meta name="description" content="Page de gestion des professions" />
+	<title>GridPage Example</title>
+	<meta name="description" content="GridPage example, windowed system div for svelte" />
 </svelte:head>
 
 <div>
