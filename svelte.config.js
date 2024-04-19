@@ -13,8 +13,7 @@ const config = {
 			$extensions: './src/extensions',
 			$exampleComponents: './src/lib/examples/components'
 		}
-	},
-	
+	}
 };
 
 export default config;
