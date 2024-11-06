@@ -7,7 +7,7 @@ a {
 	color: #40b3ff;
 }
 a:visited {
-	color: #007dcf;
+	color: rgb(0, 124.8442408377, 207.35);
 }
 .mdc-touch-target-wrapper {
 	display: inline;
@@ -892,8 +892,8 @@ svg.mdc-button__icon {
 }
 .smui-ripple-surface--secondary::before,
 .smui-ripple-surface--secondary::after {
-	background-color: #5d5d78;
-	background-color: var(--mdc-ripple-color, var(--mdc-theme-secondary, #5d5d78));
+	background-color: rgb(92.7, 92.7, 120);
+	background-color: var(--mdc-ripple-color, var(--mdc-theme-secondary, rgb(92.7, 92.7, 120)));
 }
 .smui-ripple-surface--secondary:hover::before,
 .smui-ripple-surface--secondary.mdc-ripple-surface--hover::before {
@@ -918,14 +918,14 @@ svg.mdc-button__icon {
 	--mdc-ripple-fg-opacity: var(--mdc-ripple-press-opacity, 0.12);
 }
 .smui-button--color-secondary:not(:disabled) {
-	color: #5d5d78;
+	color: rgb(92.7, 92.7, 120);
 }
 .smui-button--color-secondary:not(:disabled) .mdc-button__icon {
-	color: #5d5d78;
+	color: rgb(92.7, 92.7, 120);
 }
 .smui-button--color-secondary.mdc-button--raised:not(:disabled),
 .smui-button--color-secondary.mdc-button--unelevated:not(:disabled) {
-	background-color: #5d5d78;
+	background-color: rgb(92.7, 92.7, 120);
 }
 .smui-button--color-secondary.mdc-button--raised:not(:disabled),
 .smui-button--color-secondary.mdc-button--unelevated:not(:disabled) {
@@ -987,12 +987,12 @@ svg.mdc-button__icon {
 	color: #fff;
 }
 .smui-button--color-secondary.mdc-button--outlined:not(:disabled) {
-	border-color: #5d5d78;
+	border-color: rgb(92.7, 92.7, 120);
 }
 .smui-button--color-secondary .mdc-button__ripple::before,
 .smui-button--color-secondary .mdc-button__ripple::after {
-	background-color: #5d5d78;
-	background-color: var(--mdc-ripple-color, #5d5d78);
+	background-color: rgb(92.7, 92.7, 120);
+	background-color: var(--mdc-ripple-color, rgb(92.7, 92.7, 120));
 }
 .smui-button--color-secondary:hover .mdc-button__ripple::before,
 .smui-button--color-secondary.mdc-ripple-surface--hover .mdc-button__ripple::before {
@@ -1140,7 +1140,7 @@ svg.mdc-button__icon {
 		0px 0px 0px 0px rgba(0, 0, 0, 0.12);
 	border-width: 1px;
 	border-style: solid;
-	border-color: #3c3c3f;
+	border-color: rgb(59.64, 59.64, 63.16);
 }
 .mdc-card--outlined::after {
 	border: none;
@@ -1863,16 +1863,16 @@ svg.mdc-button__icon {
 	background-color: var(--mdc-theme-surface, #212125);
 }
 .mdc-dialog .mdc-dialog__scrim {
-	background-color: rgba(255, 255, 255, 0.32);
+	background-color: hsla(0, 0%, 100%, 0.32);
 }
 .mdc-dialog .mdc-dialog__surface-scrim {
-	background-color: rgba(255, 255, 255, 0.32);
+	background-color: hsla(0, 0%, 100%, 0.32);
 }
 .mdc-dialog .mdc-dialog__title {
-	color: rgba(255, 255, 255, 0.87);
+	color: hsla(0, 0%, 100%, 0.87);
 }
 .mdc-dialog .mdc-dialog__content {
-	color: rgba(255, 255, 255, 0.6);
+	color: hsla(0, 0%, 100%, 0.6);
 }
 .mdc-dialog .mdc-dialog__close {
 	color: #fff;
@@ -1910,10 +1910,10 @@ svg.mdc-button__icon {
 .mdc-dialog.mdc-dialog--scrollable .mdc-dialog__title,
 .mdc-dialog.mdc-dialog--scrollable .mdc-dialog__actions,
 .mdc-dialog.mdc-dialog--scrollable.mdc-dialog-scroll-divider-footer .mdc-dialog__actions {
-	border-color: rgba(255, 255, 255, 0.12);
+	border-color: hsla(0, 0%, 100%, 0.12);
 }
 .mdc-dialog.mdc-dialog--scrollable .mdc-dialog__title {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	border-bottom: 1px solid hsla(0, 0%, 100%, 0.12);
 	margin-bottom: 0;
 }
 .mdc-dialog.mdc-dialog-scroll-divider-header.mdc-dialog--fullscreen .mdc-dialog__header {
@@ -5718,7 +5718,7 @@ a.mdc-list-item {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 .mdc-snackbar__surface {
-	background-color: lightgray;
+	background-color: rgb(210.6, 210.6, 211.4);
 }
 .mdc-snackbar__label {
 	color: rgba(33, 33, 37, 0.87);
@@ -6326,7 +6326,7 @@ a.mdc-list-item {
 	vertical-align: 0;
 }
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-	background-color: #2a2a2e;
+	background-color: rgb(41.88, 41.88, 45.72);
 }
 .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::before {
 	border-bottom-color: rgba(255, 255, 255, 0.42);
@@ -7068,7 +7068,7 @@ a.mdc-list-item {
 	cursor: default;
 }
 .mdc-text-field--disabled.mdc-text-field--filled {
-	background-color: #252529;
+	background-color: rgb(37.44, 37.44, 41.36);
 }
 .mdc-text-field--disabled.mdc-text-field--filled .mdc-text-field__ripple {
 	display: none;
