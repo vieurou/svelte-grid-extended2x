@@ -11,16 +11,13 @@ export type LayoutItem = Size &
 		invalidate: () => void;
 	};
 
-/**
- * PageItem
- */
 export type PageItem = LayoutItem & {
 	name: string;
 	folded?: boolean;
 	headed?: boolean;
 	data?: object;
 	cssClass?: string;
-	style?: string;
+	cssStyle?: string;
 };
 
 /**
