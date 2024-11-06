@@ -1,3 +1,22 @@
+# svelte-grid-extended2x
+
+## introduction
+
+Projet fork de svelte-grid-extended qui a pour but de rajouter un coposant Page reutilisage , ainsi que le composant PageGridItem qui est un GridItem adapté a Page
+
+- ajoute .history au gitignore ( history est le dossier de l'extension history de vsCode https://github.com/zabel-xyz/local-history )
+
+- dans GridItem.svelte
+  ajout d'une fonction generateUUID pour utilisation sur tout navigateur ainsi qu'en http.
+
+- ajout de la bibliotheque d'extension https://github.com/vieurou/jsextensions.git
+
+- ajout d'alias pour $extensions: './src/extensions',et $exampleComponents: './src/lib/examples/components'
+
+- ajout de SMUI
+
+- ajout d'une page d'exemple pour le composant GridPage
+
 # svelte-grid-extended 🍾
 
 [![npm version](https://badge.fury.io/js/svelte-grid-extended.svg)](https://badge.fury.io/js/svelte-grid-extended)
