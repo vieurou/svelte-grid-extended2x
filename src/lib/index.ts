@@ -5,5 +5,5 @@ export { Grid, type LayoutItem, type PageItem, type LayoutChangeDetail, type Gri
 //ajout de Page.svelte
 export { default as PageOLD } from './PageOLD.svelte';
 export { default as GridItem } from './GridItem.svelte';
-export { default as PageGridItem } from './PageGridItem.svelte';
+export { default as PageGridItemOLD } from './PageGridItemOLD.svelte';
 export default Grid;
