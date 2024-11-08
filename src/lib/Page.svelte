@@ -3,7 +3,7 @@
 <script lang="ts">
 	//config
 
-	let debugThis = true;
+	const debugThis = true;
 
 	//sveltekit
 	import { onMount } from 'svelte';
@@ -13,7 +13,7 @@
 	import '$extensions/string.extension.js';
 
 	//grid
-	import Grid, { type PageItem /*Page, GridItem, PageGridItem */ } from '$lib';
+	import Grid, { type PageItem /*Page, GridItem*/, PageGridItem } from '$lib';
 
 	//SMUI
 	import Snackbar, { Actions, Label } from '@smui/snackbar';
@@ -43,15 +43,43 @@
 	let dispos: Array<{ key: string; value: string }> | null = [], //tableau des dispositions
 		urlPathname = ''; //url de la page sans le slash initial pour créer des nom de dispo en fonstion de la page.
 
-	//au demarage au recupe le nom de la page
-	//et on recupere les dispositions enregistrées
-	onMount(() => {
-		urlPathname = $page.url.pathname.removeFirstChar();
-		dispos = getDispositions();
-		if (dispos.length > 0) loadGrid(dispos[0].key);
-		if (debugThis) console.log('dispositions enregistrées : ', dispos);
-	});
+	//chargmeent du store
+	import { pageItemsStore } from '$stores/pageItems.store';
 
+	//eport des parametres
+	export let nomPage = 'pageTemplate';
+	export let description = 'Description de la page';
+
+	export let pageItems: Array<PageItem> = [];
+
+	//varibale interne
+	let items: Array<PageItem> | null = null;
+	let itemsBackup: Array<PageItem> | null = null;
+	let hiddenItems: Array<PageItem> | null = null;
+	const itemSize = { width: 100, height: 100 };
+
+	//Reactive
+	$: items = $pageItemsStore.pageItems;
+
+	$: itemsBackup = $pageItemsStore.itemsBackup;
+
+	$: hiddenItems = $pageItemsStore.hiddenItems;
+
+	/////DEBUG
+	$: {
+		if (debugThis) console.log('items dans Page mis à jour= ', items);
+	}
+	$: {
+		if (debugThis) console.log('itemsBackup dans Page mis à jour = ', itemsBackup);
+	}
+	$: {
+		if (debugThis) console.log('hiddenItems dans Page mis à jour = ', hiddenItems);
+	}
+	$: {
+		if (debugThis) console.log('pageItems dans Page mis à jour = ', pageItems);
+	}
+
+	/////FUNCTIONS
 	//fonction qui recupere les dispositions enregistrées
 	function getDispositions() {
 		// Récupérer toutes les clés dans localStorage
@@ -75,6 +103,7 @@
 	let loadDialogOpen: boolean = false; //dialog de chargement ouvert
 
 	function openLoadDialog() {
+		console.log('openLoadDialog appelé');
 		loadDialogOpen = true;
 	}
 
@@ -83,10 +112,12 @@
 	}*/
 
 	function loadGrid(name: string) {
+		console.log('loadGrid appelé');
 		const localItems = localStorage.getItem(name);
 		if (localItems) {
-			items = JSON.parse(localItems);
-			if (items) pageItems = items;
+			pageItemsStore.setItems(JSON.parse(localItems));
+			/*items = JSON.parse(localItems);
+			if (items) pageItems = items;*/
 		}
 	}
 
@@ -176,13 +207,14 @@
 	////////Gestion du déplacement
 	let globalMovable = false;
 
-	$: console.log('globalMovable dans Page.svelte , l215 : ', globalMovable);
-
 	////////Gestion du RESET
-	/*function resetGrid() {
-		if (itemsBackup) pageItems = structuredClone(itemsBackup);
+	function resetGrid() {
+		//if (itemsBackup) pageItems = structuredClone(itemsBackup);
+		console.log('items dans resetGrid= ', items);
+		pageItemsStore.resetToBackup();
 		globalMovable = false;
-	}*/
+		console.log('items = ', items);
+	}
 
 	/**
 	 * @function swapMovable
@@ -191,118 +223,10 @@
 	 * @param {boolean|null} force
 	 * 				Si null on swap , sinon on force la valeur de force
 	 */
-	function swapMovable(id: string, force: boolean | null = null) {
-		if (force !== null) {
-			items = items.map((item) => {
-				if (item.id === id) {
-					item.movable = force;
-				}
-				/* if (item.movable) {
-					item.h += 2;
-				}
-				else 
-				{
-					item.h -= 2;
-				} */
-				return item;
-			});
-			return;
-		}
-		items = items.map((item) => {
-			if (item.id === id) {
-				item.movable = !item.movable;
-				/* if (item.movable) {
-					item.h += 2;
-				}
-				else 
-				{
-					item.h += 1;
-				} */
-			}
-			return item;
-		});
-	}
-
-	////////Gestion du pliage
-	/**
-	 * @function swapFolded
-	 * @param id
-	 * @param force 			Si null on swap , sinon on force la valeur de force
-	 */
-	/*function swapFolded(id: string, force: boolean | null = null) {
-		if (force !== null) {
-			items = items.map((item) => {
-				if (item.id === id) {
-					item.folded = force;
-				}
-				return item;
-			});
-			return;
-		}
-		items = items.map((item) => {
-			if (item.id === id) {
-				item.folded = !item.folded;
-			}
-			return item;
-		});
-	}*/
-
-	//*******FIN Gestion du fenetrage*********//
-
-	//******* Gestion des Fenetres *********//
-
-	//CODE specifique à ma page de gestion des professions
-
-	export let nomPage = 'pageTemplate';
-	export let description = 'Description de la page';
-
-	export let pageItems: Array<PageItem> = [];
-	import { pageItemsStore } from '$stores/pageItems.store';
-
-	let items: Array<PageItem> | null = null; //pageItems;
-	let itemsBackup: Array<PageItem> | null = null; // structuredClone(pageItems);
-	const itemSize = { width: 100, height: 100 };
-
-	$: {
-		console.log('pageItems recupéré dans setInitialItems = ', pageItems);
-		pageItemsStore.setInitialItems(pageItems);
-	}
-
-	// Utiliser $pageItemsStore pour accéder aux valeurs du store
-	$: {
-		items = $pageItemsStore.pageItems;
-		console.log('pageItems dans Page.svelte = ', items);
-	}
-	$: {
-		itemsBackup = $pageItemsStore.itemsBackup;
-		console.log('itemsBackup dans Page.svelte = ', itemsBackup);
-	}
-
-	/*
-    $:{ 
-        pageItems = pageItems;
-        if (debugThis) console.log("▢ src/components/page/page.svelte ▶ \t●318\n\tpageItems = ", pageItems);
-
-
-        items = pageItems;
-        if (debugThis) console.log("▢ src/components/page/page.svelte ▶ \t●322\n\titems = ", items);
-
-        if (itemsBackup === null && pageItems !== null && pageItems.length != 0)
-            itemsBackup = structuredClone(pageItems);
-			if (debugThis) console.log("▢ src/components/page/page.svelte ▶ \t●326\n\titemsBackup = ", itemsBackup);
-    }
-
-    $: {
-        if (debugThis) console.log("▢ src/components/page/page.svelte ▶ \t●297\n\titemsBackup = ", itemsBackup);
-    } */
-
-	//*******FIN Gestion des Fenetres*********//
-	//export let hiddenItems: Array<PageItem> = [];
 
 	function hasDebug() {
 		return pageItemsStore.hasItem('debug');
 	}
-
 	function toggleDebug() {
 		if (!pageItemsStore.hasItem('debug')) {
 			pageItemsStore.addItem({
@@ -316,6 +240,7 @@
 				resizable: true,
 				folded: false,
 				headed: false,
+				visible: true,
 				data: {
 					text: '🐞🐞🐞🐞🐞🐞🐞'
 				}
@@ -324,7 +249,31 @@
 			pageItemsStore.removeItem('debug');
 		}
 	}
+
+	function setVisibilityItem(id: string) {
+		pageItemsStore.setItems(
+			items?.map((item) => {
+				if (item.id === id) {
+					item.visible = !item.visible;
+				}
+				return item;
+			}) as PageItem[]
+		);
+	}
+
+	//au demarage au recupe le nom de la page
+	//et on recupere les dispositions enregistrées
+	onMount(() => {
+		console.log('onMount appelé');
+		pageItemsStore.setInitialItems(pageItems);
+		urlPathname = $page.url.pathname.removeFirstChar();
+		dispos = getDispositions();
+		if (dispos.length > 0) loadGrid(dispos[0].key);
+		if (debugThis) console.log('dispositions enregistrées : ', dispos);
+	});
 </script>
+
+WIP
 
 <!-- HEADER -->
 <svelte:head>
@@ -333,60 +282,79 @@
 </svelte:head>
 <!-- FIN HEADER -->
 
-<!-- Bloc des boutons -->
-
 <div>
 	<Button
 		on:click={() => {
-			pageItemsStore.resetToBackup();
+			resetGrid();
 		}}>Reset</Button
 	>
 	<Button on:click={openSaveDialog}>Save</Button>
 	<Button on:click={openLoadDialog}>Load</Button>
 	<Button
 		on:click={() => {
-			globalMovable = false;
-			items?.forEach((element) => {
-				swapMovable(element.id, globalMovable);
-			});
+			globalMovable = !globalMovable;
+			pageItemsStore.swapAllMovable(globalMovable);
 		}}
-		disabled={!globalMovable}
 	>
-		bloq all
-	</Button>
-	<Button
-		on:click={() => {
-			globalMovable = true;
-			items?.forEach((element) => {
-				//swapmovable(element.id, globalMovable);
-				swapMovable(element.id, globalMovable);
-			});
-		}}
-		disabled={globalMovable}
-	>
-		unbloq all
-	</Button>
-	<Button on:click={toggleDebug}>
-		{#if hasDebug()}
-			Hide Debug
+		{#if globalMovable}
+			bloq all
 		{:else}
-			Show Debug
+			unbloq all
 		{/if}
 	</Button>
-	<!-- <select on:change={(e) => showItem(e.target.value)} label="Ouvrir un élément caché">
+
+	{#if debugThis}
+		<Button on:click={toggleDebug}>
+			{#if hasDebug()}
+				Debug OFF
+			{:else}
+				Debug ON
+			{/if}
+		</Button>
+	{/if}
+	<select on:change={(e) => setVisibilityItem(e.target.value)} label="Ouvrir un élément caché">
 		<option value="">Sélectionner un élément caché</option>
-		{#each hiddenItems as item}
-			<option value={item.id}>{item.name}</option>
-		{/each}
-	</select>-->
+		{#if hiddenItems && hiddenItems.length > 0}
+			{#each hiddenItems as item}
+				<option value={item.id}>{item.name}</option>
+			{/each}
+		{/if}
+	</select>
 </div>
 
+<!-- FIN Bloc des boutons -->
 <!-- FIN Bloc des boutons -->
 
 <!-- Bloc body -->
 
 <Grid cols={0} rows={0} {itemSize} collision="push">
-	<slot />
+	<div class="content-container">
+		{#each items as item, i (item.id)}
+			<PageGridItem
+				bind:x={item.x}
+				bind:y={item.y}
+				bind:w={item.w}
+				bind:h={item.h}
+				bind:movable={item.movable}
+				bind:resizable={item.resizable}
+				bind:folded={item.folded}
+				bind:headed={item.headed}
+				bind:name={item.name}
+				bind:visible={item.visible}
+				bind:cssClass={item.cssClass}
+				bind:cssStyle={item.cssStyle}
+			>
+				<div slot="moveHandle" let:moveStart>
+					<div class="move-handle" on:pointerdown={moveStart}>
+						{item.name}
+					</div>
+				</div>
+				<div class="item">
+					<slot {item} />
+				</div>
+			</PageGridItem>
+		{/each}
+	</div>
 </Grid>
 
 <!-- FIN Bloc body -->

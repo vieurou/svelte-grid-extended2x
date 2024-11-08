@@ -15,6 +15,7 @@ export type PageItem = LayoutItem & {
 	name: string;
 	folded?: boolean;
 	headed?: boolean;
+	visible?: boolean;
 	data?: object;
 	cssClass?: string;
 	cssStyle?: string;

@@ -13,7 +13,7 @@
 	import type { LayoutItem, LayoutChangeDetail, Size, ItemSize } from './types';
 	import { getGridContext } from './Grid.svelte';
 
-	//import IconButton from '@smui/icon-button';
+	import IconButton from '@smui/icon-button';
 
 	import PageItem from '$lib';
 
@@ -91,6 +91,8 @@
 
 	export let cssStyle: string | undefined = undefined;
 
+	export let visible = true;
+
 	let active = false;
 
 	let left: number;
@@ -151,6 +153,7 @@
 		data: {},
 		cssClass: '',
 		cssStyle: '',
+		visible: true,
 		invalidate
 	} as PageItem;
 
@@ -167,7 +170,8 @@
 	$: item.headed = headed;
 	$: item.data = data;
 	$: item.cssClass = cssClass;
-	$: item.style = cssStyle;
+	$: item.cssStyle = cssStyle;
+	$: item.visible = visible;
 
 	$: item, invalidate();
 
@@ -569,50 +573,78 @@
 			[previewItem]
 		);
 	}
+
+	$: console.log(`${name} : visible =`, visible);
+
+	function toggleVisibility() {
+		console.log(`${name} : toggleVisibility visible =`, visible);
+		visible = !visible;
+	}
+
+	function handlePointerDown(event: PointerEvent) {
+		if (_movable && !$$slots.moveHandle) {
+			// Vérifier si le clic ne provient pas de l'IconButton
+			if (!(event.target as Element).closest('.icon-button')) {
+				moveStart(event);
+			}
+		}
+	}
 </script>
 
-<div
-	class={`${classes} ${active ? activeClass : ''}`}
-	class:item-default={!classes}
-	class:active-default={!activeClass && active}
-	class:non-active-default={!active}
-	on:pointerdown={_movable && !$$slots.moveHandle ? moveStart : null}
-	style={`position: absolute; left:${left}px; top:${top}px; width: ${width}px; height: ${height}px; 
-			${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;
-			${$$restProps.style ?? ''}`}
-	bind:this={itemRef}
->
-	{#if _movable}
-		<!-- <slot name="moveHandle" {moveStart} />-->
-		<div class="move-handle" on:pointerdown={moveStart}>
-			{name}
-		</div>
-	{/if}
-
-	<slot {id} {active} {w} {h} />
-
-	{#if _resizable}
-		<slot name="resizeHandle" {resizeStart}>
-			<div
-				class={resizerClass}
-				class:resizer-default={!resizerClass}
-				on:pointerdown={resizeStart}
-			/>
-		</slot>
-	{/if}
-</div>
-
-{#if active && $gridParams.itemSize}
-	{@const preview = calcPosition(previewItem, {
-		itemSize: $gridParams.itemSize,
-		gap: $gridParams.gap
-	})}
+{#if visible}
 	<div
-		class={previewClass ?? ''}
-		class:item-preview-default={!previewClass}
-		style={`position: absolute; left:${preview.left}px; top:${preview.top}px;  
+		class={`${classes} ${active ? activeClass : ''}`}
+		class:item-default={!classes}
+		class:active-default={!activeClass && active}
+		class:non-active-default={!active}
+		on:pointerdown={handlePointerDown}
+		style={`	position: absolute; 
+				left:${left}px; 
+				top:${top}px; 
+				width: ${width}px; 
+				height: ${height}px;
+				${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;
+				${$$restProps.style ?? ''}`}
+		bind:this={itemRef}
+	>
+		{#if _movable}
+			<div>
+				<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
+					>close</IconButton
+				>
+			</div>
+			<!-- <slot name="moveHandle" {moveStart} />-->
+
+			<div class="move-handle" on:pointerdown={moveStart}>
+				{name}
+			</div>
+		{/if}
+
+		<slot {id} {active} {w} {h} />
+
+		{#if _resizable}
+			<slot name="resizeHandle" {resizeStart}>
+				<div
+					class={resizerClass}
+					class:resizer-default={!resizerClass}
+					on:pointerdown={resizeStart}
+				/>
+			</slot>
+		{/if}
+	</div>
+
+	{#if active && $gridParams.itemSize}
+		{@const preview = calcPosition(previewItem, {
+			itemSize: $gridParams.itemSize,
+			gap: $gridParams.gap
+		})}
+		<div
+			class={previewClass ?? ''}
+			class:item-preview-default={!previewClass}
+			style={`position: absolute; left:${preview.left}px; top:${preview.top}px;  
 		width: ${preview.width}px; height: ${preview.height}px; z-index: -10;`}
-	/>
+		/>
+	{/if}
 {/if}
 
 <style>
