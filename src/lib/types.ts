@@ -11,16 +11,21 @@ export type LayoutItem = Size &
 		invalidate: () => void;
 	};
 
-export type PageItem = LayoutItem & {
-	name: string;
-	folded?: boolean;
-	headed?: boolean;
-	visible?: boolean;
-	data?: object;
-	cssClass?: string;
-	cssStyle?: string;
-};
+export type PageItem = LayoutItem &
+	Fold & {
+		name: string;
+		headed?: boolean;
+		visible?: boolean;
+		data?: object;
+		cssClass?: string;
+		cssStyle?: string;
+	};
 
+export type Fold = {
+	folded: boolean;
+	nfw: number | undefined;
+	nfh: number | undefined;
+};
 /**
  * Item position in grid units
  */

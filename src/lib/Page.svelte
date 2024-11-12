@@ -3,7 +3,7 @@
 <script lang="ts">
 	//config
 
-	const debugThis = true;
+	export let debugThis: boolean = false;
 
 	//sveltekit
 	import { onMount } from 'svelte';
@@ -24,8 +24,6 @@
 	import IconButton from '@smui/icon-button';
 	import HelperText from '@smui/textfield/helper-text';
 	import List, { Item as LItem, Text } from '@smui/list';
-	/*import Card from '@smui/card';
-	import Select from '@smui/select';*/
 
 	import { snackbarMessage } from '$stores/snackBar.store';
 	let snackbarClipBoard: Snackbar;
@@ -59,7 +57,10 @@
 	const itemSize = { width: 100, height: 100 };
 
 	//Reactive
-	$: items = $pageItemsStore.pageItems;
+	$: {
+		items = $pageItemsStore.pageItems;
+		globalMovable = $pageItemsStore.pageItems.some((item) => item.movable);
+	}
 
 	$: itemsBackup = $pageItemsStore.itemsBackup;
 
@@ -112,7 +113,7 @@
 	}*/
 
 	function loadGrid(name: string) {
-		console.log('loadGrid appelé');
+		if (debugThis) console.log('loadGrid appelé');
 		const localItems = localStorage.getItem(name);
 		if (localItems) {
 			pageItemsStore.setItems(JSON.parse(localItems));
@@ -250,30 +251,25 @@
 		}
 	}
 
-	function setVisibilityItem(id: string) {
-		pageItemsStore.setItems(
-			items?.map((item) => {
-				if (item.id === id) {
-					item.visible = !item.visible;
-				}
-				return item;
-			}) as PageItem[]
-		);
+	function setVisibilityItem(id: string, value: boolean | null) {
+		if (debugThis) console.log('setVisibilityItem id= ', id, ' value= ', value);
+		pageItemsStore.updateItem({ id: id, visible: value });
+		pageItemsStore.removeItemFromHiddenItems(id);
 	}
 
 	//au demarage au recupe le nom de la page
 	//et on recupere les dispositions enregistrées
 	onMount(() => {
-		console.log('onMount appelé');
+		if (debugThis) console.log('onMount appelé');
 		pageItemsStore.setInitialItems(pageItems);
 		urlPathname = $page.url.pathname.removeFirstChar();
 		dispos = getDispositions();
 		if (dispos.length > 0) loadGrid(dispos[0].key);
 		if (debugThis) console.log('dispositions enregistrées : ', dispos);
 	});
-</script>
 
-WIP
+	let showConf = false;
+</script>
 
 <!-- HEADER -->
 <svelte:head>
@@ -282,7 +278,13 @@ WIP
 </svelte:head>
 <!-- FIN HEADER -->
 
-<div>
+<IconButton
+	class="material-icons"
+	on:click={() => {
+		showConf = !showConf;
+	}}>settings</IconButton
+>
+{#if showConf}
 	<Button
 		on:click={() => {
 			resetGrid();
@@ -312,15 +314,27 @@ WIP
 			{/if}
 		</Button>
 	{/if}
-	<select on:change={(e) => setVisibilityItem(e.target.value)} label="Ouvrir un élément caché">
-		<option value="">Sélectionner un élément caché</option>
-		{#if hiddenItems && hiddenItems.length > 0}
-			{#each hiddenItems as item}
-				<option value={item.id}>{item.name}</option>
-			{/each}
-		{/if}
-	</select>
-</div>
+	{#if hiddenItems && hiddenItems.length > 0}
+		<select
+			on:change={(e) => setVisibilityItem(e.target.value, true)}
+			label="Ouvrir un élément caché"
+		>
+			<option value="">Ouvrir un élément caché</option>
+			{#if hiddenItems && hiddenItems.length > 0}
+				{#each hiddenItems as item}
+					<option value={item.id}>{item.name}</option>
+				{/each}
+			{/if}
+		</select>
+		<!--<Select on:change={(e) => setVisibilityItem(e.target.value, true)} label="Ouvrir un élément">
+			{#if hiddenItems && hiddenItems.length > 0}
+				{#each hiddenItems as item}
+					<Option value={item.id}>{item.name}</Option>
+				{/each}
+			{/if}
+		</Select>-->
+	{/if}
+{/if}
 
 <!-- FIN Bloc des boutons -->
 <!-- FIN Bloc des boutons -->
@@ -331,6 +345,7 @@ WIP
 	<div class="content-container">
 		{#each items as item, i (item.id)}
 			<PageGridItem
+				bind:id={item.id}
 				bind:x={item.x}
 				bind:y={item.y}
 				bind:w={item.w}
@@ -344,11 +359,6 @@ WIP
 				bind:cssClass={item.cssClass}
 				bind:cssStyle={item.cssStyle}
 			>
-				<div slot="moveHandle" let:moveStart>
-					<div class="move-handle" on:pointerdown={moveStart}>
-						{item.name}
-					</div>
-				</div>
 				<div class="item">
 					<slot {item} />
 				</div>

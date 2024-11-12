@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import PageItem from '$lib';
-const debugThis = false;
+export const debugThis = false;
 
 function createPageItemsStore() {
 	const { subscribe, set, update } = writable<{
@@ -12,9 +12,30 @@ function createPageItemsStore() {
 	});
 
 	// Créez le store dérivé pour hiddenItems
-	const hiddenItems = derived({ subscribe }, ($store) =>
-		$store.pageItems.filter((item) => !item.visible)
-	);
+	const hiddenItems = derived({ subscribe }, ($store) => {
+		const hidden = $store.pageItems.filter((item) => !item.visible);
+		if (debugThis) console.log('hiddenItems updated:', hidden);
+		return hidden;
+	});
+
+	function addItemToHiddenItems(itemId: string) {
+		if (debugThis) console.log('addItemToHiddenItems appelée avec itemId:', itemId);
+		update((state) => {
+			const item = state.pageItems.find((i) => i.id === itemId);
+			if (item) {
+				state.hiddenItems = [...state.hiddenItems, item];
+			}
+			return state;
+		});
+	}
+
+	function removeItemFromHiddenItems(itemId: string) {
+		console.log('removeItemFromHiddenItems appelée avec itemId:', itemId);
+		update((state) => {
+			state.hiddenItems = state.hiddenItems.filter((i) => i.id !== itemId);
+			return state;
+		});
+	}
 
 	//debug a chaque fois que pageItems est mis a jour
 	subscribe((state) => {
@@ -27,6 +48,8 @@ function createPageItemsStore() {
 	return {
 		subscribe,
 		hiddenItems,
+		addItemToHiddenItems,
+		removeItemFromHiddenItems,
 		/**
 		 * Met à jour la liste des éléments de la page avec la liste d'éléments
 		 * fournie en paramètre. Sauvegarde également la liste fournie en
@@ -67,11 +90,17 @@ function createPageItemsStore() {
 				...state,
 				pageItems: JSON.parse(JSON.stringify(state.itemsBackup)) // Deep copy
 			})),
-		updateItem: (item: PageItem) =>
-			update((state) => ({
-				...state,
-				pageItems: state.pageItems.map((i) => (i.id === item.id ? item : i))
-			})),
+		updateItem: (updatedItem: PageItem) =>
+			update((state) => {
+				const updatedPageItems = state.pageItems.map((item) =>
+					item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+				);
+				console.log('pageItems updated:', updatedPageItems);
+				return {
+					...state,
+					pageItems: updatedPageItems
+				};
+			}),
 		hasItem: (itemId: string) => {
 			let itemExists = false;
 			update((state) => {
@@ -81,7 +110,7 @@ function createPageItemsStore() {
 			return itemExists;
 		},
 		swapMovable: (id: string, force: boolean | null = null) => {
-			console.log('swapMovable', id, force);
+			if (debugThis) console.log('swapMovable', id, force);
 			update((state) => {
 				if (force !== null) {
 					state.pageItems = state.pageItems.map((item) => {
@@ -102,7 +131,7 @@ function createPageItemsStore() {
 			});
 		},
 		swapAllMovable: (force: boolean | null = null) => {
-			console.log('swapAllMovable', force);
+			if (debugThis) console.log('swapAllMovable', force);
 			update((state) => {
 				if (force !== null) {
 					state.pageItems = state.pageItems.map((item) => {
@@ -119,7 +148,7 @@ function createPageItemsStore() {
 			});
 		},
 		swapFolded: (id: string, force: boolean | null = null) => {
-			console.log('swapFolded', id, force);
+			if (debugThis) console.log('swapFolded', id, force);
 			update((state) => {
 				if (force !== null) {
 					state.pageItems = state.pageItems.map((item) => {
@@ -140,7 +169,7 @@ function createPageItemsStore() {
 			});
 		},
 		swapAllFolded: (force: boolean | null = null) => {
-			console.log('swapAllFolded', force);
+			if (debugThis) console.log('swapAllFolded', force);
 			update((state) => {
 				if (force !== null) {
 					state.pageItems = state.pageItems.map((item) => {

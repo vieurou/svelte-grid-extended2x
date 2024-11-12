@@ -17,6 +17,8 @@
 
 	import PageItem from '$lib';
 
+	import { pageItemsStore } from '../stores/pageItems.store';
+
 	const dispatch = createEventDispatcher<{
 		change: LayoutChangeDetail;
 		previewchange: LayoutChangeDetail;
@@ -27,6 +29,8 @@
 	let classes: string | undefined = undefined;
 
 	export { classes as class };
+
+	export let debugThis: boolean = false;
 
 	/**
 	 * Unique identifier of the item. Used to identify the item in collision checks.
@@ -83,6 +87,10 @@
 
 	export let folded = false;
 
+	export let nfh: number | undefined = w;
+
+	export let nfw: number | undefined = h;
+
 	export let headed = false;
 
 	export let data: unknown = undefined;
@@ -91,7 +99,9 @@
 
 	export let cssStyle: string | undefined = undefined;
 
-	export let visible = true;
+	export let visible: boolean;
+
+	$: visible = $pageItemsStore.pageItems.find((item) => item.id === id)?.visible;
 
 	let active = false;
 
@@ -149,6 +159,8 @@
 		resizable,
 		name: '',
 		folded: false,
+		nfw,
+		nfh,
 		headed: false,
 		data: {},
 		cssClass: '',
@@ -167,6 +179,8 @@
 	$: item.resizable = resizable;
 	$: item.name = name;
 	$: item.folded = folded;
+	$: item.nfw = nfw;
+	$: item.nfh = nfh;
 	$: item.headed = headed;
 	$: item.data = data;
 	$: item.cssClass = cssClass;
@@ -574,13 +588,34 @@
 		);
 	}
 
-	$: console.log(`${name} : visible =`, visible);
+	$: if (debugThis) console.log(`${name} : visible =`, visible);
 
 	function toggleVisibility() {
-		console.log(`${name} : toggleVisibility visible =`, visible);
-		visible = !visible;
+		const newVisibility = !visible;
+		if (debugThis) console.log(`${id} : toggleVisibility visible =`, newVisibility);
+
+		if (!newVisibility) {
+			pageItemsStore.addItemToHiddenItems(id);
+		} else {
+			pageItemsStore.removeItemFromHiddenItems(id);
+		}
+
+		pageItemsStore.updateItem({ id, visible: newVisibility });
 	}
 
+	function toggleFolded() {
+		const itemFolded = {
+			id,
+			folded: !folded,
+			nfw: item.w,
+			nfh: item.h,
+			//w: folded ? item.nfw : 2,
+			h: folded ? item.nfh : 0
+		};
+
+		pageItemsStore.updateItem(itemFolded);
+		invalidate();
+	}
 	function handlePointerDown(event: PointerEvent) {
 		if (_movable && !$$slots.moveHandle) {
 			// Vérifier si le clic ne provient pas de l'IconButton
@@ -598,7 +633,7 @@
 		class:active-default={!activeClass && active}
 		class:non-active-default={!active}
 		on:pointerdown={handlePointerDown}
-		style={`	position: absolute; 
+		style={`position: absolute; 
 				left:${left}px; 
 				top:${top}px; 
 				width: ${width}px; 
@@ -607,21 +642,25 @@
 				${$$restProps.style ?? ''}`}
 		bind:this={itemRef}
 	>
-		{#if _movable}
-			<div>
-				<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
-					>close</IconButton
-				>
-			</div>
-			<!-- <slot name="moveHandle" {moveStart} />-->
-
-			<div class="move-handle" on:pointerdown={moveStart}>
-				{name}
+		{#if folded || _movable}
+			<div class="header">
+				<div class="move-handle" on:pointerdown={moveStart}>
+					{name}
+				</div>
+				<div class="icon-container">
+					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
+						>close</IconButton
+					>
+					<IconButton class="material-icons  icon-button" on:click={toggleFolded}
+						>{folded ? 'unfold_more' : 'unfold_less'}</IconButton
+					>
+				</div>
+				<!-- <slot name="moveHandle" {moveStart} />-->
 			</div>
 		{/if}
-
-		<slot {id} {active} {w} {h} />
-
+		{#if !folded}
+			<slot {id} {active} {w} {h} />
+		{/if}
 		{#if _resizable}
 			<slot name="resizeHandle" {resizeStart}>
 				<div
@@ -689,5 +728,20 @@
 		height: 5px;
 		border-right: 2px solid rgba(0, 0, 0, 0.4);
 		border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+	}
+
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.move-handle {
+		flex-grow: 1;
+		cursor: move;
+	}
+
+	.icon-container {
+		display: flex;
 	}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	// conf
 
-	let debugThis = true;
+	let debugThis: boolean = false;
 
 	// Importer le composant PAGE et autres composants nécessaires
 	//import Grid, { type PageItem, Page, GridItem, PageGridItem } from '$lib';
@@ -84,12 +84,12 @@
 	$: if (debugThis) console.log('pageItems dans +page.svelte= ', pageItems);
 </script>
 
-COUCOUCOUCOUCOU
 <Page
 	{pageItems}
 	nomPage="Page d'exemple d'utilisation de PageGrid"
 	description="Page de gestion des zones"
 	let:item
+	{debugThis}
 >
 	{#if item.id === 'coucou 1'}
 		<HelloWorld who={'AAAAAAARGNH 🦓'} />
