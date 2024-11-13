@@ -316,7 +316,12 @@
 	{/if}
 	{#if hiddenItems && hiddenItems.length > 0}
 		<select
-			on:change={(e) => setVisibilityItem(e.target.value, true)}
+			on:change={(e) => {
+				if (e.target.value) {
+					setVisibilityItem(e.target.value, true);
+					e.target.value = ''; // Réinitialise la valeur sélectionnée
+				}
+			}}
 			label="Ouvrir un élément caché"
 		>
 			<option value="">Ouvrir un élément caché</option>

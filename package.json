@@ -2,12 +2,15 @@
 	"name": "svelte-grid-extendedx2",
 	"version": "1.2.1",
 	"description": "A draggable and resizable grid layout, with windowed system, for Svelte",
-	"repository": "https://github.com/vieurou/svelte-grid-extended2x",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/vieurou/svelte-grid-extended2x.git"
+	},
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && yarn package",
+		"build": "vite build && npm run package",
 		"preview": "vite preview",
-		"package": "svelte-kit sync && svelte-package && publint",
+		"package": "svelte-kit sync && svelte-package --input src  && publint",
 		"prepublishOnly": "yarn package",
 		"test": "vitest",
 		"coverage": "vitest run --coverage",
@@ -48,6 +51,7 @@
 		"url": "https://github.com/vieurou/svelte-grid-extended2x/issues"
 	},
 	"peerDependencies": {
+		"@sveltejs/kit": "^2.0.0",
 		"svelte": "^4.0.0"
 	},
 	"devDependencies": {

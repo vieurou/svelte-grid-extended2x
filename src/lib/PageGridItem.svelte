@@ -17,7 +17,7 @@
 
 	import PageItem from '$lib';
 
-	import { pageItemsStore } from '../stores/pageItems.store';
+	import { pageItemsStore } from '$stores/pageItems.store';
 
 	const dispatch = createEventDispatcher<{
 		change: LayoutChangeDetail;
@@ -615,6 +615,8 @@
 
 		pageItemsStore.updateItem(itemFolded);
 		invalidate();
+
+		item.invalidate();
 	}
 	function handlePointerDown(event: PointerEvent) {
 		if (_movable && !$$slots.moveHandle) {
