@@ -1,18 +1,13 @@
 <script lang="ts">
 	// conf
 
-	let debugThis: boolean = false;
+	let debugThis: boolean = true;
 
 	// Importer le composant PAGE et autres composants nécessaires
-	//import Grid, { type PageItem, Page, GridItem, PageGridItem } from '$lib';
 	import { type PageItem, Page } from '$lib';
 	import HelloWorld from '$lib/examples/components/showHelloWorld.svelte';
 
-	//SMUI
-	//import Card from '@smui/card';
-	//import IconButton from '@smui/icon-button';
-
-	//let pageItems : Array<PageItem> = [
+	// Créer un tableau de PageItem
 	const pageItems = [
 		{
 			id: 'coucou 1',
@@ -92,7 +87,7 @@
 	{debugThis}
 >
 	{#if item.id === 'coucou 1'}
-		<HelloWorld who={'AAAAAAARGNH 🦓'} />
+		<HelloWorld who={'OOOOOOOH 🦓'} />
 	{:else if item.data}
 		{item.data.text}
 	{:else}

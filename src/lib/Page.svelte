@@ -231,19 +231,19 @@
 	function toggleDebug() {
 		if (!pageItemsStore.hasItem('debug')) {
 			pageItemsStore.addItem({
-				id: 'debug',
+				id: '_debug_items_',
 				name: 'Debug',
-				x: 0,
+				x: 16,
 				y: 0,
-				w: 2,
-				h: 3,
+				w: 3,
+				h: 19,
 				movable: true,
 				resizable: true,
 				folded: false,
 				headed: false,
 				visible: true,
 				data: {
-					text: '🐞🐞🐞🐞🐞🐞🐞'
+					text: '🐞'
 				}
 			} as PageItem);
 		} else {
@@ -366,6 +366,11 @@
 			>
 				<div class="item">
 					<slot {item} />
+					{#if item.id === '_debug_items_'}
+						<pre>
+							{JSON.stringify(items, null, 2)}        
+						</pre>
+					{/if}
 				</div>
 			</PageGridItem>
 		{/each}
