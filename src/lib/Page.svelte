@@ -12,6 +12,9 @@
 	//extensions
 	import '$extensions/string.extension.js';
 
+	//utils
+	import { copyToClipboard } from './utils/clipboard';
+
 	//grid
 	import Grid, { type PageItem /*Page, GridItem*/, PageGridItem } from '$lib';
 
@@ -43,6 +46,7 @@
 
 	//chargmeent du store
 	import { pageItemsStore } from '$stores/pageItems.store';
+	import { compile } from 'svelte/compiler';
 
 	//eport des parametres
 	export let nomPage = 'pageTemplate';
@@ -217,21 +221,15 @@
 		console.log('items = ', items);
 	}
 
-	/**
-	 * @function swapMovable
-	 * @description			swap la propriété movable d'un item
-	 * @param {string} id  	id de l'item
-	 * @param {boolean|null} force
-	 * 				Si null on swap , sinon on force la valeur de force
-	 */
+	const id_debug = '_debug_items_';
+	let debugItemExist: boolean = false;
+	
 
-	function hasDebug() {
-		return pageItemsStore.hasItem('debug');
-	}
+	
 	function toggleDebug() {
-		if (!pageItemsStore.hasItem('debug')) {
+		if (!pageItemsStore.hasItem(id_debug)) {
 			pageItemsStore.addItem({
-				id: '_debug_items_',
+				id: id_debug,
 				name: 'Debug',
 				x: 16,
 				y: 0,
@@ -246,8 +244,10 @@
 					text: '🐞'
 				}
 			} as PageItem);
+			debugItemExist = true;
 		} else {
-			pageItemsStore.removeItem('debug');
+			pageItemsStore.removeItem(id_debug);
+			debugItemExist = false;
 		}
 	}
 
@@ -307,7 +307,7 @@
 
 	{#if debugThis}
 		<Button on:click={toggleDebug}>
-			{#if hasDebug()}
+			{#if debugItemExist}
 				Debug OFF
 			{:else}
 				Debug ON
@@ -367,6 +367,13 @@
 				<div class="item">
 					<slot {item} />
 					{#if item.id === '_debug_items_'}
+					
+						<Button
+							on:click={() => {
+								copyToClipboard(JSON.stringify(items, null, 2));
+							}}>Copier
+						</Button>
+
 						<pre>
 							{JSON.stringify(items, null, 2)}        
 						</pre>

@@ -618,6 +618,12 @@
 
 		item.invalidate();
 	}
+
+	function toggleMovable() {
+		pageItemsStore.updateItem({ id, movable: !movable } );
+		invalidate();
+		item.invalidate();
+	}
 	function handlePointerDown(event: PointerEvent) {
 		if (_movable && !$$slots.moveHandle) {
 			// Vérifier si le clic ne provient pas de l'IconButton
@@ -650,9 +656,12 @@
 					{name}
 				</div>
 				<div class="icon-container">
-					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
-						>close</IconButton
+					<IconButton class="material-icons  icon-button" on:click={toggleMovable}
+						>check</IconButton
 					>
+					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
+					>close</IconButton
+				>
 					<IconButton class="material-icons  icon-button" on:click={toggleFolded}
 						>{folded ? 'unfold_more' : 'unfold_less'}</IconButton
 					>
