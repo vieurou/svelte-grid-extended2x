@@ -620,7 +620,7 @@
 	}
 
 	function toggleMovable() {
-		pageItemsStore.updateItem({ id, movable: !movable } );
+		pageItemsStore.updateItem({ id, movable: !movable });
 		invalidate();
 		item.invalidate();
 	}
@@ -640,7 +640,6 @@
 		class:item-default={!classes}
 		class:active-default={!activeClass && active}
 		class:non-active-default={!active}
-		
 		style={`position: absolute; 
 				left:${left}px; 
 				top:${top}px; 
@@ -651,7 +650,8 @@
 		bind:this={itemRef}
 	>
 		{#if folded || _movable}
-			<div class="header"
+			<div
+				class="header"
 				on:pointerdown={handlePointerDown}
 				style={`${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;`}
 			>
@@ -659,15 +659,24 @@
 					{name}
 				</div>
 				<div class="icon-container">
-					<IconButton class="material-icons  icon-button" on:click={toggleMovable}
-						>check</IconButton
+					<IconButton 
+						class="material-icons  icon-button" 
+						on:click={toggleMovable}
 					>
-					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}
-					>close</IconButton
-				>
-					<IconButton class="material-icons  icon-button" on:click={toggleFolded}
-						>{folded ? 'unfold_more' : 'unfold_less'}</IconButton
+					check
+					</IconButton>
+					<IconButton 
+						class="material-icons  icon-button" 
+						on:click={toggleVisibility}
 					>
+					close
+					</IconButton>
+					<IconButton 
+						class="material-icons  icon-button" 
+						on:click={toggleFolded}
+					>
+					{folded ? 'unfold_more' : 'unfold_less'}
+					</IconButton>
 				</div>
 				<!-- <slot name="moveHandle" {moveStart} />-->
 			</div>
