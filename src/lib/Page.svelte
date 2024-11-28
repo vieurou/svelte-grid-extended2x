@@ -314,6 +314,7 @@
 			{/if}
 		</Button>
 	{/if}
+	{/if}
 	{#if hiddenItems && hiddenItems.length > 0}
 		<select
 			on:change={(e) => {
@@ -339,7 +340,6 @@
 			{/if}
 		</Select>-->
 	{/if}
-{/if}
 
 <!-- FIN Bloc des boutons -->
 <!-- FIN Bloc des boutons -->
