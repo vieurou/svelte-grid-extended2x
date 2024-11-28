@@ -640,18 +640,21 @@
 		class:item-default={!classes}
 		class:active-default={!activeClass && active}
 		class:non-active-default={!active}
-		on:pointerdown={handlePointerDown}
+		
 		style={`position: absolute; 
 				left:${left}px; 
 				top:${top}px; 
 				width: ${width}px; 
 				height: ${height}px;
-				${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;
+				
 				${$$restProps.style ?? ''}`}
 		bind:this={itemRef}
 	>
 		{#if folded || _movable}
-			<div class="header">
+			<div class="header"
+				on:pointerdown={handlePointerDown}
+				style={`${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;`}
+			>
 				<div class="move-handle" on:pointerdown={moveStart}>
 					{name}
 				</div>
