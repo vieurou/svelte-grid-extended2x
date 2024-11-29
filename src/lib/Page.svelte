@@ -15,6 +15,9 @@
 	//utils
 	import { copyToClipboard } from './utils/clipboard';
 
+	//composant DebugItem
+	import DebugItem from '$lib/DebugItem.svelte';
+
 	//grid
 	import Grid, { type PageItem /*Page, GridItem*/, PageGridItem } from '$lib';
 
@@ -223,9 +226,7 @@
 
 	const id_debug = '_debug_items_';
 	let debugItemExist: boolean = false;
-	
 
-	
 	function toggleDebug() {
 		if (!pageItemsStore.hasItem(id_debug)) {
 			pageItemsStore.addItem({
@@ -240,8 +241,12 @@
 				folded: false,
 				headed: false,
 				visible: true,
-				data: {
-					text: '🐞'
+				preComponentText: '🐞🐞🐞🐞🐞🐞🐞🐞🐞🐞🐞🐞',
+				postComponentText: '☠☠☠☠☠☠☠☠☠☠☠☠',
+				text: '😶😶😶😶😶😶😶',
+				component: DebugItem,
+				props: {
+					items: items
 				}
 			} as PageItem);
 			debugItemExist = true;
@@ -314,32 +319,25 @@
 			{/if}
 		</Button>
 	{/if}
-	{/if}
-	{#if hiddenItems && hiddenItems.length > 0}
-		<select
-			on:change={(e) => {
-				if (e.target.value) {
-					setVisibilityItem(e.target.value, true);
-					e.target.value = ''; // Réinitialise la valeur sélectionnée
-				}
-			}}
-			label="Ouvrir un élément caché"
-		>
-			<option value="">Ouvrir un élément caché</option>
-			{#if hiddenItems && hiddenItems.length > 0}
-				{#each hiddenItems as item}
-					<option value={item.id}>{item.name}</option>
-				{/each}
-			{/if}
-		</select>
-		<!--<Select on:change={(e) => setVisibilityItem(e.target.value, true)} label="Ouvrir un élément">
-			{#if hiddenItems && hiddenItems.length > 0}
-				{#each hiddenItems as item}
-					<Option value={item.id}>{item.name}</Option>
-				{/each}
-			{/if}
-		</Select>-->
-	{/if}
+{/if}
+{#if hiddenItems && hiddenItems.length > 0}
+	<select
+		on:change={(e) => {
+			if (e.target.value) {
+				setVisibilityItem(e.target.value, true);
+				e.target.value = ''; // Réinitialise la valeur sélectionnée
+			}
+		}}
+		label="Ouvrir un élément caché"
+	>
+		<option value="">Ouvrir un élément caché</option>
+		{#if hiddenItems && hiddenItems.length > 0}
+			{#each hiddenItems as item}
+				<option value={item.id}>{item.name}</option>
+			{/each}
+		{/if}
+	</select>
+{/if}
 
 <!-- FIN Bloc des boutons -->
 <!-- FIN Bloc des boutons -->
@@ -366,17 +364,17 @@
 			>
 				<div class="item">
 					<slot {item} />
-					{#if item.id === '_debug_items_'}
-					
-						<Button
-							on:click={() => {
-								copyToClipboard(JSON.stringify(items, null, 2));
-							}}>Copier
-						</Button>
+					{#if item.preComponentText}
+						{item.preComponentText}
+					{/if}
+					{#if item.component}
+						<svelte:component this={item.component} {...item.props || {}} />
+					{:else if item.text}
+						{item.text}
+					{/if}
 
-						<pre>
-							{JSON.stringify(items, null, 2)}        
-						</pre>
+					{#if item.postComponentText}
+						{item.postComponentText}
 					{/if}
 				</div>
 			</PageGridItem>

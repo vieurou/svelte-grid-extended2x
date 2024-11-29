@@ -21,10 +21,8 @@
 			folded: false,
 			headed: true,
 			visible: true,
-			data: {
-				//text: 'coucou 🤶',
-				who: 'AAAAAAARGNH 🦓'
-			}
+			component: HelloWorld,
+			props: { who: 'AAAAAAARGNH 🦓' }
 		},
 		{
 			id: 'coucou 2',
@@ -38,9 +36,7 @@
 			folded: false,
 			headed: false,
 			visible: true,
-			data: {
-				text: 'coucou 🤷'
-			}
+			text: 'coucou 🤷'
 		},
 		{
 			id: 'coucou 3',
@@ -54,9 +50,7 @@
 			folded: false,
 			headed: false,
 			visible: true,
-			data: {
-				text: 're coucou 🤟🏻 '
-			}
+			text: 're coucou 🤟🏻 '
 		},
 		{
 			id: 'Carte',
@@ -70,9 +64,7 @@
 			folded: false,
 			headed: false,
 			visible: true,
-			data: {
-				text: 'coucou 🥦🥦🥦🥦 '
-			}
+			text: 'coucou 🥦🥦🥦🥦 '
 		}
 	] as PageItem[];
 
@@ -85,12 +77,4 @@
 	description="Page de gestion des zones"
 	let:item
 	{debugThis}
->
-	{#if item.id === 'coucou 1'}
-		<HelloWorld who={'OOOOOOOH 🦓'} />
-	{:else if item.data}
-		{item.data.text}
-	{:else}
-		{item.name}
-	{/if}
-</Page>
+/>
