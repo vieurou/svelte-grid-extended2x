@@ -11,15 +11,29 @@ export type LayoutItem = Size &
 		invalidate: () => void;
 	};
 
-export type PageItem = LayoutItem &
-	Fold & {
+export type PageItem = 
+	LayoutItem &
+	Fold & 
+	SvelteComposant & 
+	TextOnItem &
+	{
 		name: string;
 		headed?: boolean;
 		visible?: boolean;
-		data?: object;
 		cssClass?: string;
 		cssStyle?: string;
 	};
+
+export type SvelteComposant = {
+	component?: any | null;
+	props?: object| null;
+}
+
+export type TextOnItem = {
+	text?: string | null;
+	preComponentText?: string | null;
+	postComponentText?: string | null;
+}
 
 export type Fold = {
 	folded: boolean;
