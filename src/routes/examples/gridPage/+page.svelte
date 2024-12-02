@@ -2,15 +2,16 @@
 
 <script lang="ts">
 	// conf
-
 	let debugThis: boolean = true;
 
 	// Importer le composant PAGE et autres composants nécessaires
 	import { type PageItem, Page } from '$lib';
-	//on importe les composants
-	import HelloWorld from '$lib/examples/components/showHelloWorld.svelte';
+
 	//on importe la map des composants
 	import componentsMap from './componentsMap';
+
+	//on importe le composants car il sera apeller dans le slot
+	import HelloWorld from '$lib/examples/components/showHelloWorld.svelte';
 
 	// Créer un tableau de PageItem
 	const pageItems = [
@@ -33,9 +34,9 @@
 			id: 'standard',
 			text: '🥦🥦🥦🥦 <br/> Item Standard <br/> 🥦🥦🥦🥦 '
 		},
-		//item avec un composant dans pageITem ( probleme avec la sauvegarde et le chargement)
+		//item avec un composant byebyeWorld dans pageITem
 		{
-			id: 'HelloWorld pageItem',
+			id: 'ByeByeWorld pageItem',
 			name: 'Item avec un composant dans pageItem',
 			x: 7,
 			y: 0,
@@ -48,12 +49,12 @@
 			headed: false,
 			visible: true,
 
-			componentName: 'HelloWorld',
+			componentName: 'ByeByeWorld',
 			props: {
 				who: 'AAAAAAARGNH 🦓'
 			},
 
-			preComponentText: '<h2> Composant HelloWorld dans pageItem </h2>',
+			preComponentText: '<h2> Composant ByeByeWorld dans pageItem </h2>',
 			postComponentText: '\n\t\t\t\t<h2 class="text-red"> fin Composant HelloWorld </h2> \n\t\t\t',
 
 			cssStyle: `
