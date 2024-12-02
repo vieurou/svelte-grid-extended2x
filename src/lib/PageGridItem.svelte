@@ -1,3 +1,5 @@
+<!-- src/lib/PageGridItem.svelte -->
+
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 
@@ -659,23 +661,14 @@
 					{name}
 				</div>
 				<div class="icon-container">
-					<IconButton 
-						class="material-icons  icon-button" 
-						on:click={toggleMovable}
-					>
-					check
+					<IconButton class="material-icons  icon-button" on:click={toggleMovable}>
+						check
 					</IconButton>
-					<IconButton 
-						class="material-icons  icon-button" 
-						on:click={toggleVisibility}
-					>
-					close
+					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}>
+						close
 					</IconButton>
-					<IconButton 
-						class="material-icons  icon-button" 
-						on:click={toggleFolded}
-					>
-					{folded ? 'unfold_more' : 'unfold_less'}
+					<IconButton class="material-icons  icon-button" on:click={toggleFolded}>
+						{folded ? 'unfold_more' : 'unfold_less'}
 					</IconButton>
 				</div>
 				<!-- <slot name="moveHandle" {moveStart} />-->

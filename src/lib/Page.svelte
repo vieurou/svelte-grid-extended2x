@@ -1,4 +1,4 @@
-<!-- src/routes/Grid/+page.svelte-->
+<!-- src/lib/Page.svelte-->
 
 <script lang="ts">
 	//config
@@ -55,6 +55,7 @@
 	export let description = 'Description de la page';
 
 	export let pageItems: Array<PageItem> = [];
+	export let resolveComponent: (itemId: string) => any = () => null;
 
 	//varibale interne
 	let items: Array<PageItem> | null = null;
@@ -66,6 +67,13 @@
 	$: {
 		items = $pageItemsStore.pageItems;
 		globalMovable = $pageItemsStore.pageItems.some((item) => item.movable);
+	}
+	$: {
+		if (items) {
+			items.forEach((item) => {
+				item.component = resolveComponent(item.id);
+			});
+		}
 	}
 
 	$: itemsBackup = $pageItemsStore.itemsBackup;

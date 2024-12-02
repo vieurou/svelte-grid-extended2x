@@ -1,3 +1,5 @@
+<!-- src/routes/examples/gridPage/+page.svelte -->
+
 <script lang="ts">
 	// conf
 
@@ -29,7 +31,6 @@
 			text: '🥦🥦🥦🥦 <br/> Item Standard <br/> 🥦🥦🥦🥦 '
 		},
 		//item avec un composant dans pageITem ( probleme avec la sauvegarde et le chargement)
-		//Utiliser le slot
 		{
 			id: 'HelloWorld pageItem',
 			name: 'Item avec un composant dans pageItem',
@@ -103,14 +104,25 @@
 		}
 	] as PageItem[];
 
+	function resolveComponent(itemId: string) {
+		switch (itemId) {
+			case 'HelloWorld pageItem':
+				return HelloWorld;
+
+			default:
+				return null;
+		}
+	}
+
 	$: if (debugThis) console.log('pageItems dans +page.svelte= ', pageItems);
 </script>
 
 <Page
-	{pageItems}
 	nomPage="Page d'exemple d'utilisation de PageGrid"
 	description="Page de gestion des zones"
 	let:item
+	{pageItems}
+	{resolveComponent}
 	{debugThis}
 >
 	{#if item.id === 'HelloWorld slot'}

@@ -1,18 +1,19 @@
+// src/stores/pageItems.store.ts
 import { writable, derived } from "svelte/store";
-import  { type PageItem,  defaultPageItem } from '$lib';
+import { type PageItem, defaultPageItem } from '$lib';
+import { persistentStore } from './persistent.store';
 
 export const debugThis = false;
 
 function createPageItemsStore() {
-  const { subscribe, set, update } = writable<{
-    pageItems: PageItem[];
-    itemsBackup: PageItem[];
-    hiddenItems: PageItem[];
-  }>({
+  // Utilisation de persistentStore pour que les items soient sauvegardés dans localStorage
+  const baseStore = persistentStore('pageItems', {
     pageItems: [],
     itemsBackup: [],
     hiddenItems: [],
   });
+
+  const { subscribe, set, update } = baseStore;
 
   // Créez le store dérivé pour hiddenItems
   const hiddenItems = derived({ subscribe }, ($store) => {
@@ -41,7 +42,7 @@ function createPageItemsStore() {
     });
   }
 
-  //debug a chaque fois que pageItems est mis a jour
+  // Debug chaque fois que pageItems est mis à jour
   subscribe((state) => {
     if (debugThis) {
       console.log("pageItems dans store : ", state.pageItems);
@@ -61,32 +62,22 @@ function createPageItemsStore() {
      * @param {PageItem[]} initialItems - La liste des éléments initiaux
      *                                    de la page.
      */
-    /*  setInitialItems: (initialItems: PageItem[]) =>
-      set({
-        pageItems: initialItems,
-        itemsBackup: JSON.parse(JSON.stringify(initialItems)),
-        hiddenItems: [],
-      }), */
-    setInitialItems: (initialItems: PageItem[]) =>{
+    setInitialItems: (initialItems: PageItem[]) => {
       const completedInitialItems = initialItems.map((item) => {
-            return {
-              ...defaultPageItem,
-              ...item
-            } as PageItem;
-          }) as PageItem[];
+        return {
+          ...defaultPageItem,
+          ...item
+        } as PageItem;
+      }) as PageItem[];
 
       set({
         pageItems: completedInitialItems,
-        itemsBackup: completedInitialItems
-          .map((item) => {
-            return {
-              ...defaultPageItem,
-              ...item
-            } as PageItem;
-          }) 
-          .map((item) => ({ ...item })), // Copie légère
+        itemsBackup: completedInitialItems.map((item) => ({
+          ...defaultPageItem,
+          ...item
+        })),
         hiddenItems: completedInitialItems.filter((item) => !item.visible) as PageItem[],
-      })
+      });
     },
     setItems: (items: PageItem[]) =>
       update((state) => ({
@@ -94,10 +85,6 @@ function createPageItemsStore() {
         pageItems: items,
       })),
 
-    /**
-     * Supprime l'élément de la liste dont l'id est itemId.
-     * @param {string} itemId - id de l'élément à cacher
-     */
     removeItem: (itemId: string) =>
       update((state) => ({
         ...state,
@@ -110,29 +97,28 @@ function createPageItemsStore() {
         pageItems: [...state.pageItems, item],
       })),
 
-    /* resetToBackup: () =>
-      update((state) => ({
-        ...state,
-        pageItems: JSON.parse(JSON.stringify(state.itemsBackup)), // Deep copy
-      })), */
-    resetToBackup: () =>
+    resetToBackup: () =>{
       update((state) => ({
         ...state,
         pageItems: state.itemsBackup.map((item) => ({
           ...item,
         })),
-      })),
+        hiddenItems: state.itemsBackup.filter((item) => !item.visible)
+      }))
+    },
+
     updateItem: (updatedItem: PageItem) =>
       update((state) => {
         const updatedPageItems = state.pageItems.map((item) =>
           item.id === updatedItem.id ? { ...item, ...updatedItem } : item
         );
-        console.log("pageItems updated:", updatedPageItems);
+        if (debugThis) console.log("pageItems updated:", updatedPageItems);
         return {
           ...state,
           pageItems: updatedPageItems,
         };
       }),
+
     hasItem: (itemId: string) => {
       let itemExists = false;
       update((state) => {
@@ -141,6 +127,7 @@ function createPageItemsStore() {
       });
       return itemExists;
     },
+
     swapMovable: (id: string, force: boolean | null = null) => {
       if (debugThis) console.log("swapMovable", id, force);
       update((state) => {
@@ -162,6 +149,7 @@ function createPageItemsStore() {
         return state;
       });
     },
+
     swapAllMovable: (force: boolean | null = null) => {
       if (debugThis) console.log("swapAllMovable", force);
       update((state) => {
@@ -179,6 +167,7 @@ function createPageItemsStore() {
         return state;
       });
     },
+
     swapFolded: (id: string, force: boolean | null = null) => {
       if (debugThis) console.log("swapFolded", id, force);
       update((state) => {
@@ -200,6 +189,7 @@ function createPageItemsStore() {
         return state;
       });
     },
+
     swapAllFolded: (force: boolean | null = null) => {
       if (debugThis) console.log("swapAllFolded", force);
       update((state) => {
