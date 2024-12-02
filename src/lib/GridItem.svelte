@@ -8,7 +8,7 @@
 		snapOnResize,
 		type SnapGridParams
 	} from './utils/item';
-	import { hasCollisions, getCollisions, getAvailablePosition } from './utils/grid';
+	import { hasCollisions, getCollisions, getAvailablePosition, generateUUID } from './utils/grid';
 
 	import type { LayoutItem, LayoutChangeDetail, Size, ItemSize } from './types';
 	import { getGridContext } from './Grid.svelte';
@@ -35,13 +35,6 @@
 	//export let id = crypto.randomUUID();
 
 	// Générateur de UUID v4 comme fallback
-	function generateUUID() {
-		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = (Math.random() * 16) | 0,
-				v = c === 'x' ? r : (r & 0x3) | 0x8;
-			return v.toString(16);
-		});
-	}
 
 	// Exporte `id` en utilisant `crypto.randomUUID` si disponible, sinon utilise `generateUUID` comme fallback
 	export let id = crypto.randomUUID ? crypto.randomUUID() : generateUUID();
