@@ -11,18 +11,7 @@ export type LayoutItem = Size &
 		invalidate: () => void;
 	};
 
-export type PageItem = 
-	LayoutItem &
-	Fold & 
-	SvelteComposant & 
-	TextOnItem &
-	{
-		name: string;
-		headed?: boolean;
-		visible?: boolean;
-		cssClass?: string;
-		cssStyle?: string;
-	};
+
 
 export type SvelteComposant = {
 	component?: any | null;
@@ -37,8 +26,8 @@ export type TextOnItem = {
 
 export type Fold = {
 	folded: boolean;
-	nfw: number | undefined;
-	nfh: number | undefined;
+	nfw?: number | undefined;
+	nfh?: number | undefined;
 };
 /**
  * Item position in grid units
@@ -104,3 +93,33 @@ export type GridController = {
 	getFirstAvailablePosition: (w: number, h: number) => Position | null;
 	compress: () => void;
 };
+
+
+export type PageItem = 
+	LayoutItem &
+	Fold & 
+	SvelteComposant & 
+	TextOnItem &
+	{
+		name: string;
+		headed?: boolean;
+		visible?: boolean;
+		cssClass?: string;
+		cssStyle?: string;
+};
+
+export const defaultPageItem: PageItem = {
+	x: 0,
+	y: 0,
+	w: 1,
+	h: 1,
+	name: '',
+	movable: false,
+	resizable: true,
+	folded: false,
+	headed: false,
+	visible: true,
+} as PageItem;
+
+
+export type ComponentMap = { [key: string]: any };
