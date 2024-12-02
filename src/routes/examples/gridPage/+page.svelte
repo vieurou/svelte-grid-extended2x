@@ -6,8 +6,11 @@
 	let debugThis: boolean = true;
 
 	// Importer le composant PAGE et autres composants nécessaires
-	import { type PageItem, Page, defaultPageItem } from '$lib';
+	import { type PageItem, Page } from '$lib';
+	//on importe les composants
 	import HelloWorld from '$lib/examples/components/showHelloWorld.svelte';
+	//on importe la map des composants
+	import componentsMap from './componentsMap';
 
 	// Créer un tableau de PageItem
 	const pageItems = [
@@ -45,14 +48,18 @@
 			headed: false,
 			visible: true,
 
-			component: HelloWorld,
+			componentName: 'HelloWorld',
 			props: {
 				who: 'AAAAAAARGNH 🦓'
 			},
 
 			preComponentText: '<h2> Composant HelloWorld dans pageItem </h2>',
-			postComponentText:
-				'\n\t\t\t\t<h2 style="color:red;  justify-content:center; align-items:center; "> fin Composant HelloWorld </h2> \n\t\t\t'
+			postComponentText: '\n\t\t\t\t<h2 class="text-red"> fin Composant HelloWorld </h2> \n\t\t\t',
+
+			cssStyle: `
+				backgroundColor: 'lightblue',
+				color: 'black',
+				text-align: 'center'`
 		},
 		//item avec un composant dans le slot
 		{
@@ -104,16 +111,6 @@
 		}
 	] as PageItem[];
 
-	function resolveComponent(itemId: string) {
-		switch (itemId) {
-			case 'HelloWorld pageItem':
-				return HelloWorld;
-
-			default:
-				return null;
-		}
-	}
-
 	$: if (debugThis) console.log('pageItems dans +page.svelte= ', pageItems);
 </script>
 
@@ -122,7 +119,7 @@
 	description="Page de gestion des zones"
 	let:item
 	{pageItems}
-	{resolveComponent}
+	{componentsMap}
 	{debugThis}
 >
 	{#if item.id === 'HelloWorld slot'}

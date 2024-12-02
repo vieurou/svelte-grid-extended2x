@@ -14,7 +14,7 @@ export type LayoutItem = Size &
 
 
 export type SvelteComposant = {
-	component?: any | null;
+	componentName?: string;
 	props?: object| null;
 }
 
@@ -122,4 +122,4 @@ export const defaultPageItem: PageItem = {
 } as PageItem;
 
 
-export type ComponentMap = { [key: string]: any };
+export type ComponentsMap = Record<string, any>;

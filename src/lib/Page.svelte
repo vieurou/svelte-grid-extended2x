@@ -32,6 +32,9 @@
 	import List, { Item as LItem, Text } from '@smui/list';
 
 	import { snackbarMessage } from '$stores/snackBar.store';
+	import type { ComponentsMap } from '$lib';
+	export let componentsMap: ComponentsMap = {};
+
 	let snackbarClipBoard: Snackbar;
 
 	snackbarMessage.subscribe((message) => {
@@ -68,10 +71,22 @@
 		items = $pageItemsStore.pageItems;
 		globalMovable = $pageItemsStore.pageItems.some((item) => item.movable);
 	}
-	$: {
+	/* 	$: {
 		if (items) {
 			items.forEach((item) => {
 				item.component = resolveComponent(item.id);
+			});
+		}
+	} */
+	// Réassigner les composants après le chargement
+	$: {
+		if (items) {
+			items.forEach((item) => {
+				if (item.componentName) {
+					item.component = componentsMap[item.componentName] || null;
+				} else {
+					item.component = null;
+				}
 			});
 		}
 	}
