@@ -7,17 +7,19 @@
 
 	//SMUI
 	import Button from '@smui/button';
+	export let excludeIds: Array<string> = [];
 
 	export let items: any;
+	$: itemsToShow = items.filter((item) => !excludeIds.includes(item.id));
 </script>
 
 <Button
 	on:click={() => {
-		copyToClipboard(JSON.stringify(items, null, 2));
+		copyToClipboard(JSON.stringify(itemsToShow, null, 2));
 	}}
 	>Copier
 </Button>
 
 <pre>
-	{JSON.stringify(items, null, 2)}        
+	{JSON.stringify(itemsToShow, null, 2)}        
 </pre>
