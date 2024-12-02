@@ -11,18 +11,16 @@ export type LayoutItem = Size &
 		invalidate: () => void;
 	};
 
-
-
 export type SvelteComposant = {
 	componentName?: string;
-	props?: object| null;
-}
+	props?: object | null;
+};
 
 export type TextOnItem = {
 	text?: string | null;
 	preComponentText?: string | null;
 	postComponentText?: string | null;
-}
+};
 
 export type Fold = {
 	folded: boolean;
@@ -94,19 +92,16 @@ export type GridController = {
 	compress: () => void;
 };
 
-
-export type PageItem = 
-	LayoutItem &
-	Fold & 
-	SvelteComposant & 
-	TextOnItem &
-	{
+export type PageItem = LayoutItem &
+	Fold &
+	SvelteComposant &
+	TextOnItem & {
 		name: string;
 		headed?: boolean;
 		visible?: boolean;
 		cssClass?: string;
 		cssStyle?: string;
-};
+	};
 
 export const defaultPageItem: PageItem = {
 	x: 0,
@@ -118,8 +113,7 @@ export const defaultPageItem: PageItem = {
 	resizable: true,
 	folded: false,
 	headed: false,
-	visible: true,
+	visible: true
 } as PageItem;
-
 
 export type ComponentsMap = Record<string, any>;
