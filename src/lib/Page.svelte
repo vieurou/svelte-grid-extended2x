@@ -19,7 +19,7 @@
 	import DebugItem from '$lib/DebugItem.svelte';
 
 	//grid
-	import Grid, { type PageItem /*Page, GridItem*/, PageGridItem } from '$lib';
+	import Grid, { type PageItem, PageGridItem } from '$lib';
 
 	//SMUI
 	import Snackbar, { Actions, Label } from '@smui/snackbar';
@@ -44,12 +44,11 @@
 
 	////****Gestion des Dispositions****////
 
-	let dispos: Array<{ key: string; value: string }> | null = [], //tableau des dispositions
+	let dispos: Array<{ key: string; value: string | null }> | null = [], //tableau des dispositions
 		urlPathname = ''; //url de la page sans le slash initial pour créer des nom de dispo en fonstion de la page.
 
 	//chargmeent du store
 	import { pageItemsStore } from '$stores/pageItems.store';
-	import { compile } from 'svelte/compiler';
 
 	//eport des parametres
 	export let nomPage = 'pageTemplate';
@@ -225,8 +224,8 @@
 	}
 
 	const id_debug = '_debug_items_';
+	const excludeIds = [id_debug];
 	let debugItemExist: boolean = false;
-
 	function toggleDebug() {
 		if (!pageItemsStore.hasItem(id_debug)) {
 			pageItemsStore.addItem({
@@ -349,6 +348,7 @@
 		{#each items as item, i (item.id)}
 			<PageGridItem
 				bind:id={item.id}
+				bind:name={item.name}
 				bind:x={item.x}
 				bind:y={item.y}
 				bind:w={item.w}
@@ -357,24 +357,27 @@
 				bind:resizable={item.resizable}
 				bind:folded={item.folded}
 				bind:headed={item.headed}
-				bind:name={item.name}
 				bind:visible={item.visible}
 				bind:cssClass={item.cssClass}
 				bind:cssStyle={item.cssStyle}
 			>
 				<div class="item">
-					<slot {item} />
 					{#if item.preComponentText}
-						{item.preComponentText}
+						{@html item.preComponentText}
+					{/if}
+
+					<slot {item} />
+					{#if item.id === id_debug}
+						<DebugItem bind:items {excludeIds} />
 					{/if}
 					{#if item.component}
 						<svelte:component this={item.component} {...item.props || {}} />
 					{:else if item.text}
-						{item.text}
+						{@html item.text}
 					{/if}
 
 					{#if item.postComponentText}
-						{item.postComponentText}
+						{@html item.postComponentText}
 					{/if}
 				</div>
 			</PageGridItem>
