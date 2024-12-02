@@ -1,14 +1,17 @@
 import { writable, derived } from "svelte/store";
-import PageItem from "$lib";
+import  { type PageItem,  defaultPageItem } from '$lib';
+
 export const debugThis = false;
 
 function createPageItemsStore() {
   const { subscribe, set, update } = writable<{
     pageItems: PageItem[];
     itemsBackup: PageItem[];
+    hiddenItems: PageItem[];
   }>({
     pageItems: [],
     itemsBackup: [],
+    hiddenItems: [],
   });
 
   // Créez le store dérivé pour hiddenItems
@@ -64,12 +67,27 @@ function createPageItemsStore() {
         itemsBackup: JSON.parse(JSON.stringify(initialItems)),
         hiddenItems: [],
       }), */
-    setInitialItems: (initialItems: PageItem[]) =>
+    setInitialItems: (initialItems: PageItem[]) =>{
+      const completedInitialItems = initialItems.map((item) => {
+            return {
+              ...defaultPageItem,
+              ...item
+            } as PageItem;
+          }) as PageItem[];
+
       set({
-        pageItems: initialItems,
-        itemsBackup: initialItems.map((item) => ({ ...item })), // Copie légère
-        hiddenItems: [],
-      }),
+        pageItems: completedInitialItems,
+        itemsBackup: completedInitialItems
+          .map((item) => {
+            return {
+              ...defaultPageItem,
+              ...item
+            } as PageItem;
+          }) 
+          .map((item) => ({ ...item })), // Copie légère
+        hiddenItems: completedInitialItems.filter((item) => !item.visible) as PageItem[],
+      })
+    },
     setItems: (items: PageItem[]) =>
       update((state) => ({
         ...state,
