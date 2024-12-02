@@ -4,7 +4,7 @@
 //comoposant proncipal
 import Grid from './Grid.svelte';
 //types
-import type { LayoutItem, PageItem, LayoutChangeDetail, GridController, ComponentMap } from './types';
+import type { LayoutItem, PageItem, LayoutChangeDetail, GridController, ComponentsMap } from './types';
 //default onject
 import { defaultPageItem } from './types';
 //stores 
@@ -15,7 +15,7 @@ import { snackbarMessage} from '$stores/snackBar.store';
 
 
 //EXPORT 
-export { Grid, type LayoutItem, type PageItem, type LayoutChangeDetail, type GridController, type ComponentMap };
+export { Grid, type LayoutItem, type PageItem, type LayoutChangeDetail, type GridController, type ComponentsMap };
 export { defaultPageItem };
 export { default as GridItem } from './GridItem.svelte';
 

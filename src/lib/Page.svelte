@@ -58,7 +58,6 @@
 	export let description = 'Description de la page';
 
 	export let pageItems: Array<PageItem> = [];
-	export let resolveComponent: (itemId: string) => any = () => null;
 
 	//varibale interne
 	let items: Array<PageItem> | null = null;
