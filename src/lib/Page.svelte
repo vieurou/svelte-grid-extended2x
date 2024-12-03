@@ -82,6 +82,16 @@
 	// Réassigner les composants après le chargement
 	$: {
 		if (items) {
+			const idCounts = items.reduce((acc, item : PageItem) => {
+				acc[item.id] = (acc[item.id] || 0) + 1;
+				return acc;
+			}, {});
+
+		const duplicateIds = Object.entries(idCounts).filter(([id, count]) => count > 1).map(([id]) => id);
+
+		if (duplicateIds.length > 0) {
+			console.error(`Duplicate IDs found: ${duplicateIds.join(', ')}`);
+		}
 			items.forEach((item) => {
 				if (item.componentName) {
 					item.component = componentsMap[item.componentName] || _404_;
