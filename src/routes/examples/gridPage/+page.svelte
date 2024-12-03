@@ -21,23 +21,23 @@
 		},
 		//un item standard
 		{
+			id: 'standard',
+			name: 'Item Standard',
 			x: 3,
 			y: 0,
 			w: 3,
 			h: 1,
-			name: 'Item Standard',
 			movable: false,
 			resizable: true,
 			folded: false,
 			headed: false,
 			visible: true,
-			id: 'standard',
 			text: '🥦🥦🥦🥦 <br/> Item Standard <br/> 🥦🥦🥦🥦 '
 		},
 		//item avec un composant byebyeWorld dans pageITem
 		{
-			id: 'ByeByeWorld pageItem',
-			name: 'Item avec un composant dans pageItem',
+			id: 'ComposantByeByeWorld',
+			name: 'Item avec composant',
 			x: 7,
 			y: 0,
 			w: 3,
@@ -62,40 +62,46 @@
 				color: 'black',
 				text-align: 'center'`
 		},
+		//item avec un composant inexistant
+		{
+			id: 'COmposantInexistant pageItem',
+			name: 'Item avec composant inexistant',
+			x: 7,
+			y: 5,
+			w: 3,
+			h: 3,
+
+			componentName: 'composantInexistant',
+		},
 		//item avec un composant dans le slot
 		{
 			id: 'HelloWorld slot',
+			name: 'Item avec un composant dans le slot',
 			x: 11,
 			y: 0,
 			w: 3,
 			h: 3,
-			name: 'Item avec un composant dans le slot',
-			movable: false,
-			resizable: true,
-			folded: false,
-			headed: false,
-			visible: true
 		},
 		//item pas visible
 		{
+			id: 'Caché',
+			name: 'Item caché',
 			x: 0,
 			y: 2,
 			w: 3,
 			h: 1,
-			name: 'Item caché',
 
 			visible: false,
-			id: 'Caché',
 			text: 'item caché 🤷'
 		},
 
 		//item bougeable
 		{
 			id: 'Item bougeable',
+			name: 'Item bougeable',
 			x: 0,
 			y: 4,
 			w: 3,
-			name: 'Item bougeable',
 			movable: true,
 			text: "text de l'item bougeable 🤷"
 		},

@@ -32,6 +32,8 @@
 	import List, { Item as LItem, Text } from '@smui/list';
 
 	import { snackbarMessage } from '$stores/snackBar.store';
+
+	import _404_ from '$lib/_404_.svelte';
 	import type { ComponentsMap } from '$lib';
 	export let componentsMap: ComponentsMap = {};
 
@@ -53,7 +55,7 @@
 	//chargmeent du store
 	import { pageItemsStore } from '$stores/pageItems.store';
 
-	//eport des parametres
+	//export des parametres
 	export let nomPage = 'pageTemplate';
 	export let description = 'Description de la page';
 
@@ -82,7 +84,8 @@
 		if (items) {
 			items.forEach((item) => {
 				if (item.componentName) {
-					item.component = componentsMap[item.componentName] || null;
+					item.component = componentsMap[item.componentName] || _404_;
+					if (! componentsMap[item.componentName]) console.warn(`composant ${item.componentName} non trouvé dans la map de composants.`);
 				} else {
 					item.component = null;
 				}
