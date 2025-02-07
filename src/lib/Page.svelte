@@ -95,7 +95,8 @@
 			items.forEach((item) => {
 				if (item.componentName) {
 					item.component = componentsMap[item.componentName] || _404_;
-					if (! componentsMap[item.componentName]) console.warn(`composant ${item.componentName} non trouvé dans la map de composants.`);
+					if (!componentsMap[item.componentName])
+						console.warn(`composant ${item.componentName} non trouvé dans la map de composants.`);
 				} else {
 					item.component = null;
 				}

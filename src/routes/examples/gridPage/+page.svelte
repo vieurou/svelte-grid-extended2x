@@ -71,7 +71,7 @@
 			w: 3,
 			h: 3,
 
-			componentName: 'composantInexistant',
+			componentName: 'composantInexistant'
 		},
 		//item avec un composant dans le slot
 		{
@@ -80,7 +80,7 @@
 			x: 11,
 			y: 0,
 			w: 3,
-			h: 3,
+			h: 3
 		},
 		//item pas visible
 		{
