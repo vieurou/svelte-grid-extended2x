@@ -1,4 +1,5 @@
 import { getAvailablePosition, hasCollisions } from './utils/grid';
+import { getEffectiveItem } from './utils/pageItem';
 import type { GridParams, GridController as GridControllerType, LayoutItem } from './types';
 
 export class GridController implements GridControllerType {
@@ -39,12 +40,19 @@ export class GridController implements GridControllerType {
 
 	private _compress(items: Record<string, LayoutItem>, skipUpdate = false): void {
 		const gridItems = Object.values(items);
-		const sortedItems = [...gridItems].sort((a, b) => a.y - b.y);
+		const sortedItems = [...gridItems].sort((a, b) => {
+			if (a.y !== b.y) {
+				return a.y - b.y;
+			}
+			return a.x - b.x;
+		});
 
 		sortedItems.reduce((accItem, currentItem) => {
 			let newY = currentItem.y;
 			while (newY >= 0) {
-				if (hasCollisions({ ...currentItem, y: newY }, accItem)) {
+				// Utiliser les dimensions effectives pour les calculs de collision
+				const effectiveCurrentItem = getEffectiveItem({ ...currentItem, y: newY });
+				if (hasCollisions(effectiveCurrentItem, accItem)) {
 					break;
 				}
 				newY--;

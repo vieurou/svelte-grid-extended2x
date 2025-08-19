@@ -8,7 +8,7 @@
 			"type": "chrome",
 			"request": "launch",
 			"name": "Lancer Chrome en utilisant localhost",
-			"url": "http://localhost:3000/examples/gridPage",
+			"url": "http://localhost:5175/examples/gridPage",
 			"webRoot": "${workspaceFolder}"
 		}
 	]

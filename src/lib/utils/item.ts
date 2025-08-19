@@ -67,6 +67,34 @@ export function calcPosition(
 	};
 }
 
+/**
+ * Calcule la position d'un PageItem en tenant compte de son état (folded, headed, etc.)
+ * Cette version utilise les dimensions effectives pour un rendu correct
+ */
+export function calcPageItemPosition(
+	item: LayoutItem,
+	options: { itemSize: ItemSize; gap: number }
+): ItemPosition & ItemSize & { effectiveHeight: number; headerHeight: number; contentHeight: number } {
+	const { itemSize, gap } = options;
+
+	// Import dynamique pour éviter les dépendances circulaires
+	const { getEffectiveHeight, getHeaderHeight, getContentHeight } = require('./pageItem');
+
+	const effectiveHeight = getEffectiveHeight(item);
+	const headerHeight = getHeaderHeight(item);
+	const contentHeight = getContentHeight(item);
+
+	return {
+		left: coordinate2position(item.x, itemSize.width, gap),
+		top: coordinate2position(item.y, itemSize.height, gap),
+		width: coordinate2size(item.w, itemSize.width, gap),
+		height: coordinate2size(item.h, itemSize.height, gap),
+		effectiveHeight: effectiveHeight * itemSize.height + (effectiveHeight - 1) * gap,
+		headerHeight: headerHeight * itemSize.height,
+		contentHeight: contentHeight * itemSize.height + (contentHeight > 0 ? (contentHeight - 1) * gap : 0)
+	};
+}
+
 export function clamp(num: number, min: number, max: number): number {
 	return Math.max(Math.min(num, max), min);
 }

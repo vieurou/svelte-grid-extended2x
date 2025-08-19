@@ -2,7 +2,7 @@
 
 ## introduction
 
-Projet fork de svelte-grid-extended qui a pour but de rajouter un coposant Page reutilisage , ainsi que le composant PageGridItem qui est un GridItem adapté a Page
+Projet fork de svelte-grid-extended qui a pour but de rajouter un coposant Page reutilisage , ainsi que le composant PageGridItem qui est un Grinpm audit dItem adapté a Page
 
 - ajoute .history au gitignore ( history est le dossier de l'extension history de vsCode https://github.com/zabel-xyz/local-history )
 
@@ -50,31 +50,36 @@ pnpm add svelte-grid-extended
 
 ### Table of Contents
 
-- [Description](#description)
-- [Installation](#installation)
-- [Table of Contents](#table-of-contents)
-- [Usage](#usage)
-- [Basic](#basic)
-- [Static grid](#static-grid)
-- [Grid without bounds](#grid-without-bounds)
-- [Styling](#styling)
-- [Disable interactions](#disable-interactions)
-- [Collision Behavior](#collision-behavior)
-  - [None](#none)
-  - [Push](#push)
-  - [Compress](#compress)
-- [Custom move/resize handle](#custom-moveresize-handle)
-- [Two way binding](#two-way-binding)
-- [API Documentation](#api-documentation)
-- [Grid props](#grid-props)
-- [GridItem props](#griditem-props)
-- [Style related props:](#style-related-props)
-- [Events](#events)
-- [Grid Controller](#grid-controller)
-- [Methods](#methods)
-  - [getFirstAvailablePosition(w, h)](#getfirstavailablepositionw-h)
-  - [Example](#example)
-- [📜 License](#-license)
+- [svelte-grid-extended2x](#svelte-grid-extended2x)
+	- [introduction](#introduction)
+- [svelte-grid-extended 🍾](#svelte-grid-extended-)
+	- [Description](#description)
+	- [Installation](#installation)
+		- [Table of Contents](#table-of-contents)
+	- [Usage](#usage)
+		- [Basic](#basic)
+		- [Static grid](#static-grid)
+		- [Grid without bounds](#grid-without-bounds)
+		- [Styling](#styling)
+		- [Disable interactions](#disable-interactions)
+		- [Collision Behavior](#collision-behavior)
+			- [None](#none)
+			- [Push](#push)
+			- [Compress](#compress)
+		- [Custom move/resize handle](#custom-moveresize-handle)
+		- [Two way binding](#two-way-binding)
+	- [API Documentation](#api-documentation)
+		- [Grid props](#grid-props)
+		- [GridItem props](#griditem-props)
+		- [Style related props:](#style-related-props)
+	- [Events](#events)
+	- [Grid Controller](#grid-controller)
+		- [Methods](#methods)
+			- [getFirstAvailablePosition(w, h)](#getfirstavailablepositionw-h)
+				- [Example](#example)
+			- [compress()](#compress-1)
+				- [Example](#example-1)
+	- [📜 License](#-license)
 
 ## Usage
 

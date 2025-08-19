@@ -11,6 +11,13 @@
 		type SnapGridParams
 	} from './utils/item';
 	import { hasCollisions, getCollisions, getAvailablePosition } from './utils/grid';
+	import {
+		getEffectiveHeight,
+		getEffectiveItem,
+		isItemFolded,
+		hasVisibleHeader,
+		getOptimalFoldedHeight
+	} from './utils/pageItem';
 
 	import type { LayoutItem, LayoutChangeDetail, Size, ItemSize } from './types';
 	import { getGridContext } from './Grid.svelte';
@@ -28,11 +35,18 @@
 
 	let gridParams = getGridContext();
 
-	let classes: string | undefined = undefined;
+	// évite que la chaîne 'undefined' apparaisse dans l'attribut class
+	let classes: string = '';
 
 	export { classes as class };
 
 	export let debugThis: boolean = false;
+
+	// Nouveau prop pour le store spécifique
+	export let pageStore: any = null;
+
+	// Utiliser le store fourni ou celui par défaut
+	$: currentStore = pageStore || pageItemsStore;
 
 	/**
 	 * Unique identifier of the item. Used to identify the item in collision checks.
@@ -103,7 +117,15 @@
 
 	export let visible: boolean;
 
-	$: visible = $pageItemsStore.pageItems.find((item) => item.id === id)?.visible;
+	$: visible = $currentStore.pageItems.find((item: any) => item.id === id)?.visible;
+
+	$: _currentItem = $currentStore.pageItems.find((item: any) => item.id === id);
+
+	// Synchroniser movable avec le store
+	$: movable = _currentItem?.movable ?? movable;
+
+	// Synchroniser h avec le store (important pour les items repliés)
+	$: h = _currentItem?.h ?? h;
 
 	let active = false;
 
@@ -149,7 +171,7 @@
 		invalidate
 	} as LayoutItem;*/
 
-	let item = {
+	let item: any = {
 		id,
 		x,
 		y,
@@ -169,7 +191,7 @@
 		cssStyle: '',
 		visible: true,
 		invalidate
-	} as PageItem;
+	};
 
 	$: item.x = x;
 	$: item.y = y;
@@ -177,6 +199,8 @@
 	$: item.h = h;
 	$: item.min = min;
 	$: item.max = max;
+	$: item.hidden = !visible; // Synchroniser l'état masqué avec la visibilité
+
 	$: item.movable = movable;
 	$: item.resizable = resizable;
 	$: item.name = name;
@@ -189,7 +213,7 @@
 	$: item.cssStyle = cssStyle;
 	$: item.visible = visible;
 
-	$: item, invalidate();
+	$: (item, invalidate());
 
 	/**
 	 * Updates svelte-components props behind that item. Should be called when the item
@@ -204,6 +228,28 @@
 
 	onMount(() => {
 		$gridParams.registerItem(item);
+
+		// Corriger la hauteur si l'item est initialement replié avec une hauteur incorrecte
+		const currentItem = $currentStore.pageItems.find((storeItem: any) => storeItem.id === id);
+		if (currentItem && currentItem.folded) {
+			const optimalHeight = getOptimalFoldedHeight(currentItem, $gridParams.itemSize);
+			if (Math.abs(currentItem.h - optimalHeight) > 0.1) {
+				// L'item replié a une hauteur incorrecte, la corriger
+				const correctedItem = {
+					...currentItem,
+					nfh: currentItem.nfh || currentItem.h, // Sauvegarder la hauteur actuelle comme hauteur originale
+					h: optimalHeight
+				};
+				currentStore.updateItem(id, correctedItem);
+
+				if (debugThis) {
+					console.log(
+						`[onMount] Item replié ${id} corrigé: hauteur ${currentItem.h} -> ${optimalHeight}, nfh = ${correctedItem.nfh}`
+					);
+				}
+			}
+		}
+
 		return () => {
 			$gridParams.unregisterItem(item);
 		};
@@ -227,7 +273,7 @@
 		previewItem = item;
 	}
 
-	$: previewItem, dispatch('previewchange', { item: previewItem });
+	$: (previewItem, dispatch('previewchange', { item: previewItem }));
 
 	function applyPreview() {
 		item.x = previewItem.x;
@@ -244,6 +290,8 @@
 	// INTERACTION LOGIC
 
 	let itemRef: HTMLElement;
+	let headerRef: HTMLElement; // Référence pour mesurer la hauteur du header
+	let iconRef: HTMLElement; // Référence pour mesurer la largeur de l'icon-container
 
 	const initialPointerPosition = { left: 0, top: 0 };
 
@@ -267,7 +315,15 @@
 
 	let initialPosition = { left: 0, top: 0 };
 
-	$: _movable = !$gridParams.readOnly && movable;
+	$: _movable = !$gridParams.readOnly && _currentItem?.movable;
+
+	// Debug log pour voir la valeur de _movable
+	$: if (debugThis) {
+		console.log(`${name || id} : visible = ${visible}`);
+		console.log(`${name || id} : _currentItem =`, _currentItem);
+		console.log(`${name || id} : _currentItem?.movable =`, _currentItem?.movable);
+		console.log(`${name || id} : _movable =`, _movable);
+	}
 
 	let pointerShift = { left: 0, top: 0 };
 
@@ -437,12 +493,20 @@
 
 	let maxSize: ItemSize | undefined;
 
-	$: if ($gridParams.itemSize) {
-		minSize = {
-			width: coordinate2size(min.w, $gridParams.itemSize.width, $gridParams.gap),
-			height: coordinate2size(min.h, $gridParams.itemSize.height, $gridParams.gap)
-		};
+	function updateMinSize() {
+		if ($gridParams.itemSize) {
+			const baseMinWidth = coordinate2size(min.w, $gridParams.itemSize.width, $gridParams.gap);
+			const iconPixels = iconRef ? iconRef.offsetWidth : 0;
+			const iconMin = iconPixels + 10; // exigence : icônes + 10px
+			minSize = {
+				width: Math.max(baseMinWidth, iconMin),
+				height: coordinate2size(min.h, $gridParams.itemSize.height, $gridParams.gap)
+			};
+		}
 	}
+
+	// Recalcule automatiquement dès que itemSize ou iconRef change
+	$: updateMinSize();
 
 	$: if ($gridParams.itemSize && max) {
 		maxSize = {
@@ -597,48 +661,146 @@
 		if (debugThis) console.log(`${id} : toggleVisibility visible =`, newVisibility);
 
 		if (!newVisibility) {
-			pageItemsStore.addItemToHiddenItems(id);
+			currentStore.addItemToHiddenItems(id);
 		} else {
-			pageItemsStore.removeItemFromHiddenItems(id);
+			currentStore.removeItemFromHiddenItems(id);
 		}
 
-		pageItemsStore.updateItem({ id, visible: newVisibility });
+		const currentItem = $currentStore.pageItems.find((item: any) => item.id === id);
+		if (currentItem) {
+			currentStore.updateItem(id, { ...currentItem, visible: newVisibility });
+		}
 	}
 
 	function toggleFolded() {
-		const itemFolded = {
-			id,
-			folded: !folded,
-			nfw: item.w,
-			nfh: item.h,
-			//w: folded ? item.nfw : 2,
-			h: folded ? item.nfh : 0
-		};
+		const currentItem = $currentStore.pageItems.find((item: any) => item.id === id);
+		if (currentItem) {
+			const newFoldedState = !currentItem.folded;
 
-		pageItemsStore.updateItem(itemFolded);
-		invalidate();
+			console.group(`[toggleFolded] Item ${id}: ${currentItem.folded ? 'Déplier' : 'Replier'}`);
 
-		item.invalidate();
+			let updatedItem;
+
+			if (newFoldedState) {
+				// REPLIER : sauvegarder la hauteur actuelle et calculer la hauteur du header
+				const headerHeight = getOptimalFoldedHeight(currentItem, $gridParams.itemSize);
+				updatedItem = {
+					...currentItem,
+					folded: true,
+					nfh: currentItem.nfh || currentItem.h, // Sauvegarder la hauteur originale si pas déjà fait
+					h: headerHeight
+				};
+				console.log(
+					`[toggleFolded] REPLIER - Item ${id}: hauteur ${currentItem.h} -> ${headerHeight}, nfh sauvegardé: ${updatedItem.nfh}`
+				);
+			} else {
+				// DÉPLIER : restaurer la hauteur sauvegardée
+				const originalHeight = currentItem.nfh || currentItem.h;
+				updatedItem = {
+					...currentItem,
+					folded: false,
+					h: originalHeight
+				};
+				console.log(
+					`[toggleFolded] DÉPLIER - Item ${id}: hauteur ${currentItem.h} -> ${originalHeight}, nfh utilisé: ${currentItem.nfh}`
+				);
+			}
+
+			// Mettre à jour l'item dans le store
+			currentStore.updateItem(id, updatedItem);
+
+			console.log(
+				`[toggleFolded] Item ${id} ${newFoldedState ? 'replié' : 'déplié'} avec hauteur ${updatedItem.h}`
+			);
+			console.groupEnd();
+
+			// Juste forcer la mise à jour de la grille pour gérer les collisions
+			// La compression automatique se fera via GridController si nécessaire
+			setTimeout(() => $gridParams.updateGrid(), 50);
+		}
 	}
 
 	function toggleMovable() {
-		pageItemsStore.updateItem({ id, movable: !movable });
-		invalidate();
-		item.invalidate();
+		// Pour l'instant, cette méthode n'existe pas dans le store multi-instances
+		// currentStore.swapMovable(id);
+		const currentItem = $currentStore.pageItems.find((item: any) => item.id === id);
+		if (currentItem) {
+			currentStore.updateItem(id, { ...currentItem, movable: !currentItem.movable });
+		}
 	}
+
+	/**
+	 * Synchronise la hauteur CSS du header avec la hauteur réelle
+	 */
+	function syncHeaderHeight() {
+		if (itemRef) {
+			const headerHeight = headerRef ? headerRef.offsetHeight : 0;
+			itemRef.style.setProperty('--header-height', `${headerHeight}px`);
+
+			if (debugThis) {
+				console.log(`[syncHeaderHeight] Item ${id} header height set to: ${headerHeight}px`);
+			}
+		}
+	}
+
+	// Mettre à jour la variable CSS --header-height à chaque changement des refs
+	$: if (itemRef) {
+		// Appel direct pour maintenir la hauteur à 0 quand header n'est pas rendu
+		syncHeaderHeight();
+	}
+
+	/**
+	 * Recalcule et synchronise la hauteur de l'item quand il est en mode folded
+	 */
+	function recalculateFoldedHeight() {
+		if (_currentItem?.folded && headerRef && $gridParams.itemSize) {
+			// Attendre un tick pour que le DOM soit mis à jour
+			setTimeout(() => {
+				const headerHeight = headerRef.offsetHeight;
+				const gridHeight = headerHeight / ($gridParams.itemSize?.height || 100);
+				const optimalGridHeight = Math.max(gridHeight, 0.5);
+
+				// Mettre à jour la hauteur de l'item si nécessaire
+				const currentItem = $currentStore.pageItems.find((item: any) => item.id === id);
+				if (currentItem && Math.abs(currentItem.h - optimalGridHeight) > 0.1) {
+					currentStore.updateItem(id, {
+						...currentItem,
+						h: optimalGridHeight
+					});
+
+					if (debugThis) {
+						console.log(
+							`[recalculateFoldedHeight] Item ${id} height adjusted to: ${optimalGridHeight} (${headerHeight}px)`
+						);
+					}
+				}
+
+				syncHeaderHeight();
+			}, 50);
+		}
+	}
+
+	// Synchroniser la hauteur du header quand le composant est monté ou quand les propriétés changent
+	$: if (headerRef && (name || _currentItem?.folded !== undefined)) {
+		recalculateFoldedHeight();
+	}
+
 	function handlePointerDown(event: PointerEvent) {
-		if (_movable && !$$slots.moveHandle) {
+		if (_movable && !$$slots.resizeHandle) {
 			// Vérifier si le clic ne provient pas de l'IconButton
 			if (!(event.target as Element).closest('.icon-button')) {
 				moveStart(event);
 			}
 		}
 	}
+
+	// Debug logs combinés plus haut
+	//$: console.log('folded : ', folded, ' _movable : ', _movable, ' _resizable : ', _resizable);
 </script>
 
 {#if visible}
 	<div
-		class={`${classes} ${active ? activeClass : ''}`}
+		class={`${classes} ${active ? activeClass : ''} ${_currentItem?.folded ? 'folded-item' : ''}`}
 		class:item-default={!classes}
 		class:active-default={!activeClass && active}
 		class:non-active-default={!active}
@@ -651,40 +813,50 @@
 				${$$restProps.style ?? ''}`}
 		bind:this={itemRef}
 	>
-		{#if folded || _movable}
+		{#if _currentItem?.folded || _movable}
 			<div
 				class="header"
+				bind:this={headerRef}
 				on:pointerdown={handlePointerDown}
-				style={`${_movable && !$$slots.moveHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;`}
+				style={`${_movable && !$$slots.resizeHandle ? 'cursor: move;' : ''} touch-action: none; user-select: none;`}
 			>
 				<div class="move-handle" on:pointerdown={moveStart}>
 					{name}
 				</div>
-				<div class="icon-container">
-					<IconButton class="material-icons  icon-button" on:click={toggleMovable}>
-						check
-					</IconButton>
+				<div class="icon-container" bind:this={iconRef}>
+					{#if _currentItem.movable}
+						<IconButton class="material-icons  icon-button" on:click={toggleMovable}
+							>lock</IconButton
+						>
+					{:else}
+						<IconButton class="material-icons  icon-button" on:click={toggleMovable}
+							>lock_open</IconButton
+						>
+					{/if}
+
 					<IconButton class="material-icons  icon-button" on:click={toggleVisibility}>
 						close
 					</IconButton>
 					<IconButton class="material-icons  icon-button" on:click={toggleFolded}>
-						{folded ? 'unfold_more' : 'unfold_less'}
+						{_currentItem?.folded ? 'unfold_more' : 'unfold_less'}
 					</IconButton>
 				</div>
 				<!-- <slot name="moveHandle" {moveStart} />-->
 			</div>
 		{/if}
-		{#if !folded}
-			<slot {id} {active} {w} {h} />
-		{/if}
-		{#if _resizable}
-			<slot name="resizeHandle" {resizeStart}>
-				<div
-					class={resizerClass}
-					class:resizer-default={!resizerClass}
-					on:pointerdown={resizeStart}
-				/>
-			</slot>
+		{#if !_currentItem?.folded}
+			<div class="content-area">
+				<slot {id} {active} {w} {h} />
+				{#if _resizable}
+					<slot name="resizeHandle" {resizeStart}>
+						<div
+							class={resizerClass}
+							class:resizer-default={!resizerClass}
+							on:pointerdown={resizeStart}
+						/>
+					</slot>
+				{/if}
+			</div>
 		{/if}
 	</div>
 
@@ -704,15 +876,21 @@
 
 <style>
 	.item-default {
+		display: flex;
+		flex-direction: column;
 		transition:
 			width 0.2s,
 			height 0.2s;
 		transition:
 			transform 0.2s,
 			opacity 0.2s;
+		z-index: 1; /* Ajout d'un z-index par défaut */
+		background: transparent; /* Laisser le slot gérer le fond si besoin */
+		overflow: visible; /* header and icons must not be clipped by parent */
 	}
 	.active-default {
 		opacity: 0.7;
+		z-index: 20; /* z-index plus élevé pour l'item actif */
 	}
 	.item-preview-default {
 		background-color: rgb(192, 127, 127);
@@ -734,6 +912,7 @@
 		right: 0;
 		bottom: 0;
 		cursor: se-resize;
+		z-index: 10;
 	}
 	.resizer-default::after {
 		content: '';
@@ -749,15 +928,66 @@
 	.header {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start; /* Alignement en haut pour gérer le multi-ligne */
+		min-height: 40px;
+		padding: 4px 8px;
+		box-sizing: border-box;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		gap: 8px; /* Espace entre le titre et les boutons */
+	}
+
+	.content-area {
+		position: relative;
+		flex: 1 1 auto;
+		height: auto; /* laisser le flex gérer la hauteur */
+		min-height: 0; /* important pour le flexbox afin que le contenu ne force la hauteur */
+		margin-top: 0;
+		z-index: 0; /* contenu sous header */
+		overflow: hidden; /* le contenu peut être masqué si déborde */
+	}
+
+	.move-handle {
+		flex: 1 1 auto; /* prend l'espace restant mais peut rétrécir */
+		min-width: 0; /* permet au move-handle de rétrécir pour laisser la place aux icônes */
+		cursor: move;
+		line-height: 1.2;
+		max-width: calc(100% - 120px); /* Laisser de la place pour les 3 boutons */
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		z-index: 30; /* header au dessus pour pouvoir se superposer */
+		display: block;
+	}
+
+	.icon-container {
+		display: flex;
+		flex-shrink: 0; /* Empêcher la compression des boutons */
+		align-items: center; /* Centrer verticalement les icônes */
+		gap: 4px;
+		z-index: 40; /* icônes au-dessus */
+		padding-left: 6px;
+	}
+
+	/* Style spécial pour les items repliés */
+	:global(.folded-item) {
+		/* Hauteur gérée dynamiquement par la logique de calcul */
+		/* Ne pas forcer une hauteur fixe pour permettre l'adaptation au contenu du header */
+		overflow: hidden !important; /* S'assurer que le contenu ne déborde pas */
+	}
+
+	/* Header responsive pour les items repliés */
+	.header {
+		min-height: 40px; /* Hauteur minimale du header */
+		padding: 4px 8px;
+		box-sizing: border-box;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 
 	.move-handle {
 		flex-grow: 1;
 		cursor: move;
-	}
-
-	.icon-container {
-		display: flex;
+		line-height: 1.2;
+		max-width: calc(100% - 120px); /* Laisser de la place pour les 3 boutons */
 	}
 </style>

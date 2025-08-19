@@ -120,7 +120,7 @@
 	$: item.max = max;
 	$: item.movable = movable;
 	$: item.resizable = resizable;
-	$: item, invalidate();
+	$: (item, invalidate());
 
 	/**
 	 * Updates svelte-components props behind that item. Should be called when the item
@@ -158,7 +158,7 @@
 		previewItem = item;
 	}
 
-	$: previewItem, dispatch('previewchange', { item: previewItem });
+	$: (previewItem, dispatch('previewchange', { item: previewItem }));
 
 	function applyPreview() {
 		item.x = previewItem.x;
@@ -567,8 +567,7 @@
 	.item-default {
 		transition:
 			width 0.2s,
-			height 0.2s;
-		transition:
+			height 0.2s,
 			transform 0.2s,
 			opacity 0.2s;
 	}

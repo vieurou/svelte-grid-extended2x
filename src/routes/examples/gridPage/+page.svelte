@@ -112,7 +112,7 @@
 			x: 5,
 			y: 5,
 			w: 1,
-			h: 1,
+			h: 5,
 			folded: true,
 			text: 're coucou 🤟🏻 '
 		}
@@ -124,12 +124,41 @@
 <Page
 	nomPage="Page d'exemple d'utilisation de PageGrid"
 	description="Page de gestion des zones"
-	let:item
 	{pageItems}
 	{componentsMap}
 	{debugThis}
+	pageClass="custom-page-style"
+	pageStyle="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);"
+	menuClass="custom-menu-style"
+	menuStyle="box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+	gridClass="custom-grid-style"
+	gridStyle="padding: 0px;"
+	let:item
 >
-	{#if item.id === 'HelloWorld slot'}
+	{#if item && item.id === 'HelloWorld slot'}
 		<HelloWorld who={'OOOOOOOH 🦓'} />
 	{/if}
 </Page>
+
+<style>
+	:global(.custom-page-style) {
+		border: 2px solid #4a90e2;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	:global(.custom-menu-style) {
+		background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+		color: white;
+		border-radius: 8px 8px 0 0;
+	}
+
+	:global(.custom-menu-style .material-icons) {
+		color: white;
+	}
+
+	:global(.custom-grid-style) {
+		background-color: rgba(255, 255, 255, 0.9);
+		border-radius: 0 0 8px 8px;
+	}
+</style>

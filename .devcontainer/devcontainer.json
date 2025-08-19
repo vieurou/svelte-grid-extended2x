@@ -1,0 +1,74 @@
+{
+    "name": "SvelteGridExtended2x Development",
+    "dockerComposeFile": [
+        "../../../docker-compose.sge2x.yml"
+    ],
+    "service": "sge2x-dev",
+    "workspaceFolder": "/app",
+    "shutdownAction": "none",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Extensions GitHub Copilot
+                "github.copilot",
+                "github.copilot-chat",
+                // Extensions utilitaires
+                "xyz.local-history",
+                "shd101wyy.markdown-preview-enhanced",
+                "mikestead.dotenv",
+                // Extensions français
+                "ms-vscode.vscode-speech-language-pack-fr-fr",
+                "ms-ceintl.vscode-language-pack-fr",
+                // Extensions interface
+                "pkief.material-icon-theme",
+                "ms-vscode.vscode-speech",
+                // Extensions visualisation
+                "tomoki1207.pdf",
+                "nickdemayo.vscode-json-editor",
+                "mechatroner.rainbow-csv",
+                // Extensions spécialisées
+                "svelte.svelte-vscode",
+                "ms-ossdata.vscode-pgsql",
+                "humao.rest-client"
+            ],
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "explicit"
+                },
+                "svelte.enable-ts-plugin": true,
+                "files.associations": {
+                    "*.svelte": "svelte"
+                },
+                "emmet.includeLanguages": {
+                    "svelte": "html"
+                },
+                "files.exclude": {
+                    "node_modules": true,
+                    ".svelte-kit": true,
+                    "build": true,
+                    "dist": true,
+                    "package": true
+                }
+            }
+        }
+    },
+    "postCreateCommand": "npm install",
+    "postStartCommand": "echo 'Container SvelteGridExtended2x DEV prêt pour le développement composant'",
+    "forwardPorts": [
+        5175,
+        4175
+    ],
+    "portsAttributes": {
+        "5175": {
+            "label": "SvelteKit Dev Server",
+            "onAutoForward": "notify"
+        },
+        "4175": {
+            "label": "SvelteKit Preview",
+            "onAutoForward": "silent"
+        }
+    },
+    "remoteUser": "node"
+}

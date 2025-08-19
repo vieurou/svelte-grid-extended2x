@@ -21,10 +21,12 @@
 		font-size: 1.5em;
 		font-weight: bold;
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		max-width: 100%;
-		max-height: 100%;
-		min-width: 100%;
-		min-height: 100%;
+		/* make sizing fluid and allow shrinking inside flex parents */
+		width: 100%;
+		height: 90%;
+		min-width: 0;
+		min-height: 0;
+		box-sizing: border-box;
 		margin: auto;
 		text-align: center;
 	}
@@ -32,6 +34,9 @@
 	.icon {
 		font-size: 2em;
 		margin-bottom: 0.5em;
+		max-width: 100%;
+		height: auto;
+		display: inline-block;
 	}
 
 	.text {

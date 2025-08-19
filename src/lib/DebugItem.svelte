@@ -10,7 +10,7 @@
 	export let excludeIds: Array<string> = [];
 
 	export let items: any;
-	$: itemsToShow = items.filter((item) => !excludeIds.includes(item.id));
+	$: itemsToShow = items.filter((item: any) => !excludeIds.includes(item.id));
 </script>
 
 <Button

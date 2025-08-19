@@ -9,6 +9,7 @@ export type LayoutItem = Size &
 		movable: boolean;
 		resizable: boolean;
 		invalidate: () => void;
+		hidden?: boolean;
 	};
 
 export type SvelteComposant = {

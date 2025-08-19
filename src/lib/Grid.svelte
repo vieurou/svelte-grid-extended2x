@@ -282,5 +282,17 @@
 <style>
 	.svelte-grid-extended {
 		position: relative !important;
+		overflow: visible !important; /* Par défaut, visible pour collision 'none' */
+		min-width: 100%;
+		width: max-content;
+		min-height: 100%;
+	}
+
+	/* Styles spécifiques pour les modes de collision avec contraintes */
+	:global([data-collision='compress']) .svelte-grid-extended,
+	:global([data-collision='push']) .svelte-grid-extended {
+		overflow: visible !important; /* Laisse le conteneur parent gérer les ascenseurs */
+		height: 100%;
+		min-height: 100%; /* Assure que le Grid va jusqu'en bas */
 	}
 </style>
