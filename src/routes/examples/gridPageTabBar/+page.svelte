@@ -279,7 +279,7 @@
 	class="tab-content"
 	style="display: {keyedTabsActive && keyedTabsActive.k === 0 ? 'block' : 'none'}"
 >
-	{console.log('Affichage onglet basique, visible:', keyedTabsActive && keyedTabsActive.k === 0)}
+	<!--{console.log('Affichage onglet basique, visible:', keyedTabsActive && keyedTabsActive.k === 0)}-->
 	<Page
 		pageId="basique"
 		nomPage="Onglet Basique - Page d'exemple"

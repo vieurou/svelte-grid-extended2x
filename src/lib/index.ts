@@ -32,7 +32,7 @@ export { defaultPageItem };
 export { default as GridItem } from './GridItem.svelte';
 
 // Composants exportés par défaut
-export { default as PageOld } from './PageOld.svelte';
+//export { default as PageOld } from './PageOld.svelte';
 export { default as Page } from './Page.svelte';
 export { default as PageGridItem } from './PageGridItem.svelte';
 
